@@ -1,0 +1,33 @@
+\documentclass[9pt,landscape]{article}
+
+\input{format.tex} % formatting template
+
+\begin{document}
+
+\thispagestyle{empty}
+\null\vfill
+\begin{center}
+\Huge \textbf{华南师范大学 \\ACM-ICPC集训队 \\DeDeRong}
+
+\vspace{1.5cm}
+
+\includegraphics[height=5cm]{logo.pdf}
+
+\date{\today}{\textbf{\number\year 年 \number\month 月 \number\day 日}}
+\end{center}
+\vfill
+\clearpage
+
+% 生成目录
+\begin{twocolumn}
+\tableofcontents
+\end{twocolumn}
+
+\newpage
+\columnseprule=0.05pt
+% 插入代码
+\begin{twocolumn}
+\input{code.tex}
+\end{twocolumn}
+
+\end{document}
