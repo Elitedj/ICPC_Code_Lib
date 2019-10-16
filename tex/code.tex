@@ -736,6 +736,277 @@ int main()
 }
 \end{lstlisting}
 
+
+\subsection{二分图匹配}
+\subsubsection{匈牙利算法}
+\begin{lstlisting}
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+typedef pair<int, int> P;
+const int maxn = 1e3+5;
+const int inf = 0x3f3f3f3f;
+const int mod = 1e9+7;
+
+
+int mp[maxn][maxn];
+int use[maxn], link[maxn];
+int n, m, e, ans;
+
+int found(int u)
+{
+	for(int i=1;i<=m;i++)
+	{
+		if(!use[i] && mp[u][i])
+		{
+			use[i] = 1;
+			if(!link[i] || found(link[i]))
+			{
+				link[i] = u;
+				return 1;
+			}
+		}
+	}
+	return 0;
+}
+
+int main()
+{
+	scanf("%d%d%d", &n, &m, &e);
+	for(int i=1;i<=e;i++)
+	{
+		int u, v;
+		scanf("%d%d", &u, &v);
+		if(u<=n && v<=m)
+		{
+			mp[u][v] = 1;
+		}
+	}
+	for(int i=1;i<=n;i++)
+	{
+		memset(use, 0, sizeof(use));
+		if(found(i))ans++;
+	}
+	printf("%d\n", ans);
+	return 0;
+}
+\end{lstlisting}
+
+
+\subsection{最小生成树}
+\subsubsection{Prim}
+\begin{lstlisting}
+const int MAX=10000007;
+int dis[5002],map[5002][5002],mark[5002];
+int prim(int n)
+{
+	for(int i=1;i<=n;i++)  //初始化每个点到生成树中点的距离
+	{
+		dis[i]=map[1][i];
+		mark[i]=0;
+	}
+	dis[1]=0;
+	mark[1]=1; //1这个点加入生成树中。
+	int sum=0;
+	for(int i=1;i<n;i++) //枚举n-1条边
+	{
+		int sta=-1,Min=MAX;
+		for(int j=1;j<=n;j++)  //找不在生成树中的点中距离生成树中的点长度最小的
+		{
+			if(!mark[j]&&dis[j]<Min)
+			{
+				Min=dis[j];
+				sta=j;
+			}
+		}
+		if(sta==-1) return -1; //没找到可以可以联通的路
+		mark[sta]=1;   //新找到的点加入生成树
+		sum+=Min;
+		for(int j=1;j<=n;j++)  //更新树外的点到树中的点的距离
+		{
+			if(!mark[j]&&dis[j]>map[sta][j])
+			dis[j]=map[sta][j];
+		}
+	}
+	return sum;
+}
+
+int main()
+{
+	int n,m;
+	cin>>n>>m;
+	for(int i=1;i<=n;i++)
+	{
+		for(int j=1;j<=n;j++)
+		{
+			map[i][j]=MAX;
+		}
+	}
+	for(int i=1;i<=m;i++)
+	{
+		int a,b,c;
+		cin>>a>>b>>c;
+		if(c<map[a][b])
+		{
+			map[a][b]=c;
+			map[b][a]=c;
+		}
+	}
+	int ans = prim(n);
+	if(ans==-1)
+		cout<<"orz"<<endl;
+	else
+		cout<<ans<<endl;
+	return 0;
+}
+\end{lstlisting}
+
+
+\subsubsection{kruskal}
+\begin{lstlisting}
+#include<bits/stdc++.h>
+using namespace std;
+#define N 5005
+int father[N];
+
+int find(int x)
+{
+	int k = x;
+	while(father[k]!=k)
+	{
+		k = father[k];
+	}
+	while(father[x]!=x)
+	{
+		int temp = x;
+		x = father[x];
+		father[temp] = k;
+	}
+	return k;
+}
+
+void join(int a, int b)
+{
+	int f1, f2;
+	f1 = find(a);
+	f2 = find(b);
+	father[f1] = f2;
+}
+
+struct edge
+{
+	int node1, node2;
+	int cost;
+};
+
+vector<edge> edges;
+
+bool cmp(edge a, edge b)
+{
+	return a.cost > b.cost;
+}
+
+int kruskal(int n)
+{
+	sort(edges.begin(), edges.end(), cmp);
+	for(int i=1;i<=n;i++)
+		father[i] = i;
+	int sum=0;
+	while(n!=1 && !edges.empty())
+	{
+		edge temp = edges[edges.size()-1];
+		edges.pop_back();
+		if(find(temp.node1)!=find(temp.node2))
+		{
+			sum += temp.cost;
+			n--;
+			join(temp.node1, temp.node2);
+		}
+	}
+	if(n!=1 && edges.empty())
+		sum = -1;
+	return sum;
+}
+
+int main()
+{
+	int n,m;
+	int result;
+	cin>>n>>m;
+	for(int i=1;i<=m;i++)
+	{
+		int a,b,c;
+		cin>>a>>b>>c;
+		edge t;
+		t.node1=a;t.node2=b;t.cost=c;
+		edges.push_back(t);
+	}
+	result = kruskal(n);
+	if(result == -1)
+		cout<<"orz"<<endl;
+	else
+		cout<<result<<endl;
+	return 0;
+}
+\end{lstlisting}
+
+\subsection{拓扑排序}
+\begin{lstlisting}
+#include<bits/stdc++.h>
+using namespace std;
+const int maxn=30;
+
+int head[maxn],ip,indegree[maxn];
+int n,m,seq[maxn];
+
+struct note
+{
+	int v,next;
+}edge[maxn*maxn];
+
+void init()
+{
+	memset(head,-1,sizeof(head));
+	ip=0;
+}
+
+void addedge(int u,int v)
+{
+	edge[ip].v=v,edge[ip].next=head[u],head[u]=ip++;
+}
+
+int topo()
+{
+	queue<int>q;
+	int indeg[maxn];
+	for(int i=0; i<n; i++)
+	{
+		indeg[i]=indegree[i];
+		if(indeg[i]==0)
+		q.push(i);
+	}
+	int k=0;
+	bool res=false;
+	while(!q.empty())
+	{
+		if(q.size()!=1)res=true;
+		int u=q.front();
+		q.pop();
+		seq[k++]=u;
+		for(int i=head[u]; i!=-1; i=edge[i].next)
+		{
+			int v=edge[i].v;
+			indeg[v]--;
+			if(indeg[v]==0)
+				q.push(v);
+		}
+	}
+	if(k<n)return -1;// no
+	if(res)return 0;// more
+	return 1; // only
+}
+\end{lstlisting}
+
 \section{数据结构}
 
 
