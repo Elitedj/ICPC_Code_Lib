@@ -5,26 +5,45 @@
 \BOOKMARK [3][-]{subsubsection.1.1.3}{Floyd}{subsection.1.1}% 5
 \BOOKMARK [3][-]{subsubsection.1.1.4}{Bellman-Ford}{subsection.1.1}% 6
 \BOOKMARK [3][-]{subsubsection.1.1.5}{SPFA}{subsection.1.1}% 7
-\BOOKMARK [2][-]{subsection.1.2}{LCA}{section.1}% 8
-\BOOKMARK [3][-]{subsubsection.1.2.1}{倍增}{subsection.1.2}% 9
-\BOOKMARK [3][-]{subsubsection.1.2.2}{RMQ}{subsection.1.2}% 10
-\BOOKMARK [2][-]{subsection.1.3}{强连通分量}{section.1}% 11
-\BOOKMARK [3][-]{subsubsection.1.3.1}{Tarjan}{subsection.1.3}% 12
-\BOOKMARK [2][-]{subsection.1.4}{割点}{section.1}% 13
-\BOOKMARK [2][-]{subsection.1.5}{桥}{section.1}% 14
-\BOOKMARK [2][-]{subsection.1.6}{最大流}{section.1}% 15
-\BOOKMARK [3][-]{subsubsection.1.6.1}{Dinic}{subsection.1.6}% 16
-\BOOKMARK [3][-]{subsubsection.1.6.2}{Dinic优化}{subsection.1.6}% 17
-\BOOKMARK [2][-]{subsection.1.7}{二分图匹配}{section.1}% 18
-\BOOKMARK [3][-]{subsubsection.1.7.1}{匈牙利算法}{subsection.1.7}% 19
-\BOOKMARK [2][-]{subsection.1.8}{最小生成树}{section.1}% 20
-\BOOKMARK [3][-]{subsubsection.1.8.1}{Prim}{subsection.1.8}% 21
-\BOOKMARK [3][-]{subsubsection.1.8.2}{kruskal}{subsection.1.8}% 22
-\BOOKMARK [2][-]{subsection.1.9}{拓扑排序}{section.1}% 23
-\BOOKMARK [1][-]{section.2}{数据结构}{}% 24
-\BOOKMARK [1][-]{section.3}{DP}{}% 25
-\BOOKMARK [1][-]{section.4}{字符串}{}% 26
-\BOOKMARK [1][-]{section.5}{数学}{}% 27
-\BOOKMARK [1][-]{section.6}{STL}{}% 28
-\BOOKMARK [1][-]{section.7}{计算几何}{}% 29
-\BOOKMARK [1][-]{section.8}{其它}{}% 30
+\BOOKMARK [2][-]{subsection.1.2}{次短路}{section.1}% 8
+\BOOKMARK [2][-]{subsection.1.3}{LCA}{section.1}% 9
+\BOOKMARK [3][-]{subsubsection.1.3.1}{倍增}{subsection.1.3}% 10
+\BOOKMARK [3][-]{subsubsection.1.3.2}{RMQ}{subsection.1.3}% 11
+\BOOKMARK [2][-]{subsection.1.4}{强连通分量}{section.1}% 12
+\BOOKMARK [3][-]{subsubsection.1.4.1}{Tarjan}{subsection.1.4}% 13
+\BOOKMARK [2][-]{subsection.1.5}{割点}{section.1}% 14
+\BOOKMARK [2][-]{subsection.1.6}{桥}{section.1}% 15
+\BOOKMARK [2][-]{subsection.1.7}{最大流}{section.1}% 16
+\BOOKMARK [3][-]{subsubsection.1.7.1}{Dinic}{subsection.1.7}% 17
+\BOOKMARK [3][-]{subsubsection.1.7.2}{Dinic优化}{subsection.1.7}% 18
+\BOOKMARK [2][-]{subsection.1.8}{二分图匹配}{section.1}% 19
+\BOOKMARK [3][-]{subsubsection.1.8.1}{匈牙利算法}{subsection.1.8}% 20
+\BOOKMARK [2][-]{subsection.1.9}{最小生成树}{section.1}% 21
+\BOOKMARK [3][-]{subsubsection.1.9.1}{Prim}{subsection.1.9}% 22
+\BOOKMARK [3][-]{subsubsection.1.9.2}{kruskal}{subsection.1.9}% 23
+\BOOKMARK [2][-]{subsection.1.10}{次小生成树-POJ1679}{section.1}% 24
+\BOOKMARK [2][-]{subsection.1.11}{拓扑排序}{section.1}% 25
+\BOOKMARK [2][-]{subsection.1.12}{Floyd找最小环}{section.1}% 26
+\BOOKMARK [1][-]{section.2}{数据结构}{}% 27
+\BOOKMARK [2][-]{subsection.2.1}{并查集}{section.2}% 28
+\BOOKMARK [2][-]{subsection.2.2}{ST表}{section.2}% 29
+\BOOKMARK [2][-]{subsection.2.3}{树状数组}{section.2}% 30
+\BOOKMARK [2][-]{subsection.2.4}{线段树}{section.2}% 31
+\BOOKMARK [3][-]{subsubsection.2.4.1}{单点修改+区间求和 HDU1166}{subsection.2.4}% 32
+\BOOKMARK [3][-]{subsubsection.2.4.2}{区间修改+区间求和 POJ3465}{subsection.2.4}% 33
+\BOOKMARK [3][-]{subsubsection.2.4.3}{单点修改+区间最值 HDU1754}{subsection.2.4}% 34
+\BOOKMARK [3][-]{subsubsection.2.4.4}{区间染色+统计+离散化 POJ2528}{subsection.2.4}% 35
+\BOOKMARK [3][-]{subsubsection.2.4.5}{线段树+扫描线求矩阵覆盖周长 POJ1177}{subsection.2.4}% 36
+\BOOKMARK [3][-]{subsubsection.2.4.6}{线段树+扫描线求矩阵面积并 HDU1542}{subsection.2.4}% 37
+\BOOKMARK [2][-]{subsection.2.5}{主席树}{section.2}% 38
+\BOOKMARK [3][-]{subsubsection.2.5.1}{区间第K大}{subsection.2.5}% 39
+\BOOKMARK [3][-]{subsubsection.2.5.2}{动态区间第K大\(主席树套树状数组\) ZOJ2112}{subsection.2.5}% 40
+\BOOKMARK [1][-]{section.3}{DP}{}% 41
+\BOOKMARK [2][-]{subsection.3.1}{背包}{section.3}% 42
+\BOOKMARK [2][-]{subsection.3.2}{最长公共递增子序列}{section.3}% 43
+\BOOKMARK [2][-]{subsection.3.3}{最长公共子序列}{section.3}% 44
+\BOOKMARK [1][-]{section.4}{字符串}{}% 45
+\BOOKMARK [1][-]{section.5}{数学}{}% 46
+\BOOKMARK [1][-]{section.6}{STL}{}% 47
+\BOOKMARK [1][-]{section.7}{计算几何}{}% 48
+\BOOKMARK [1][-]{section.8}{其它}{}% 49
