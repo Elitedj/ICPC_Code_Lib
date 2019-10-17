@@ -465,7 +465,6 @@ int main()
 
 
 \subsection{强连通分量}
-\subsubsection{Tarjan}
 \begin{lstlisting}
 vector<int> g[maxn];
 int low[maxn], dfn[maxn], sta[maxn], ins[maxn], belong[maxn];
@@ -2432,8 +2431,79 @@ int LCS(const char *s1, const char *s2)
 }
 \end{lstlisting}
 
+\subsection{最长有序子序列}
+\begin{lstlisting}
+/*
+*  递增（默认）
+*  递减 
+*  非递增
+*  非递减 (1)>= && <  (2)<  (3)>=
+*/
+const int MAXN = 1001;
 
+int a[MAXN], f[MAXN], d[MAXN];   //  d[i] 用于记录 a[0...i] 以 a[i] 结尾的最大长度
 
+int bsearch(const int *f, int size, const int &a)
+{
+	int l = 0, r = size - 1;
+	while (l <= r)
+	{
+		int mid = (l + r) / 2;
+		if (a > f[mid - 1] && a <= f[mid])  //  (1)
+		{
+			return mid; 
+		}
+		else if (a < f[mid])
+		{
+			r = mid - 1;
+		}
+		else
+		{
+			l = mid + 1;
+		}
+	}
+	return -1;
+}
+
+int LIS(const int *a, const int &n)
+{
+	int i, j, size = 1;
+	f[0] = a[0];
+	d[0] = 1;
+	for (i = 1; i < n; ++i)
+	{
+		if (a[i] <= f[0])               //  (2)
+		{
+			j = 0;
+		}
+		else if (a[i] > f[size - 1])    //  (3)
+		{
+			j = size++;
+		}
+		else
+		{
+			j = bsearch(f, size, a[i]);
+		}
+		f[j] = a[i];
+		d[i] = j + 1;
+	}
+	return size;
+}
+
+int main()
+{
+	int i, n;
+	while (scanf("%d", &n) != EOF)
+	{
+		for (i = 0; i < n; ++i)
+		{
+			scanf("%d", &a[i]);
+		}
+		printf("%d\n", LIS(a, n));      // 求最大递增 / 上升子序列(如果为最大非降子序列,只需把上面的注释部分给与替换)
+	}
+	return 0;
+}
+\end{lstlisting}
 
 
 
@@ -2443,12 +2513,503 @@ int LCS(const char *s1, const char *s2)
 
 
 \section{数学}
+\subsection{快速幂}
+\begin{lstlisting}
+typedef long long ll;
+ll pow(ll x,ll n,ll mod)
+{
+	ll res=1;
+	while(n>0)
+	{
+		if(n&1)	
+		{
+			res=res*x;
+			res=res%mod;
+		}
+		x=x*x;
+		x=x%mod;
+		n>>=1;
+	}
+	return res;	
+}
+\end{lstlisting}
+
+\subsection{逆序数}
+\begin{lstlisting}
+/*
+*  也可以用树状数组做
+*  a[0...n-1] cnt=0; call: MergeSort(0, n)
+*/
+const int N = 1010;
+int a[N];
+int c[N];
+int cnt = 0;
+
+void MergeSort(int l, int r)
+{
+	int mid, i, j, tmp;
+	if (r > l + 1)
+	{
+		mid = (l + r) / 2;
+		MergeSort(l, mid);
+		MergeSort(mid, r);
+		tmp = l;
+		for (i = l, j = mid; i < mid && j < r;)
+		{
+			if (a[i] > a[j])
+			{
+				c[tmp++] = a[j++];
+				cnt += mid - i;
+			}
+			else
+			{
+				c[tmp++] = a[i++];
+			}
+		}
+		if (j < r)
+		{
+			for (; j < r; ++j)
+			{
+				c[tmp++] = a[j];
+			}
+		}
+		else
+		{
+			for (; i < mid; ++i)
+			{
+				c[tmp++]=a[i];
+			}
+		}
+		for (i = l; i < r; ++i)
+		{
+			a[i] = c[i];
+		}
+	}
+	return ;
+}
+\end{lstlisting}
+
+\subsection{无序序列变有序的最少交换次数}
+\subsubsection{相邻元素交换}
+\begin{lstlisting}
+\\ 等于逆序数个数
+\end{lstlisting}
+
+\subsubsection{任意元素交换}
+\begin{lstlisting}
+*
+*  交换任意两数的本质是改变了元素位置，
+*  故建立元素与其目标状态应放置位置的映射关系
+*/
+int getMinSwaps(vector<int> &A)
+{
+	//  排序
+	vector<int> B(A);
+	sort(B.begin(), B.end());
+	map<int, int> m;
+	int len = (int)A.size();
+	for (int i = 0; i < len; i++)
+	{
+		m[B[i]] = i;    //  建立每个元素与其应放位置的映射关系
+	}
+
+	int loops = 0;      //  循环节个数
+	vector<bool> flag(len, false);
+	//  找出循环节的个数
+	for (int i = 0; i < len; i++)
+	{
+		if (!flag[i])
+		{
+			int j = i;
+			while (!flag[j])
+			{
+				flag[j] = true;
+				j = m[A[j]];    //  原序列中j位置的元素在有序序列中的位置
+			}
+			loops++;
+		}
+	}
+	return len - loops;
+}
+\end{lstlisting}
+
+\subsection{GCD}
+\subsubsection{非递归}
+\begin{lstlisting}
+int gcd(int x, int y)
+{
+	if (!x || !y)
+	{
+		return x > y ? x : y;
+	}
+
+	for (int t; t = x % y, t; x = y, y = t) ;
+
+	return y;
+}
+\end{lstlisting}
+
+\subsubsection{递归}
+\begin{lstlisting}
+int gcd(int a, int b)
+{ 
+	return b==0 ? a : gcd(b, a%b); 
+}
+\end{lstlisting}
+
+\subsection{EXGCD}
+\begin{lstlisting}
+/*
+*  求x，y使得gcd(a, b) = a * x + b * y;
+*/
+int extgcd(int a, int b, int &x, int &y)
+{
+	if (b == 0)
+	{
+		x = 1;
+		y = 0;
+		return a;
+	}
+
+	int d = extgcd(b, a % b, x, y);
+	int t = x;
+	x = y;
+	y = t - a / b * y;
+
+	return d;
+}
+\end{lstlisting}
+
+\subsection{素数}
+\subsubsection{判断小于MAXN的数是否为素数}
+\begin{lstlisting}
+/*
+*  素数筛选，判断小于MAXN的数是不是素数
+*  notprime是一张表，false表示是素数，true表示不是
+*/
+const int MAXN = 1000010;
+bool notprime[MAXN];
+
+void init()
+{
+	memset(notprime, false, sizeof(notprime));
+	notprime[0] = notprime[1] = true;
+	for (int i = 2; i < MAXN; i++)
+	{
+		if (!notprime[i])
+		{
+			if (i > MAXN / i)   //  阻止后边i * i溢出（或者i,j用long long)
+			{
+				continue;
+			}
+			//  直接从i * i开始就可以，小于i倍的已经筛选过了
+			for (int j = i * i; j < MAXN; j += i)
+			{
+				notprime[j] = true;
+			}
+		}
+	}
+}
+\end{lstlisting}
+
+\subsubsection{生成小于等于MAXN的全部素数}
+\begin{lstlisting}
+/*
+*  素数筛选，查找出小于等于MAXN的素数
+*  prime[0]存素数的个数
+*/
+
+const int MAXN = 100000;
+int prime[MAXN + 1];
+
+void getPrime()
+{
+	memset(prime, 0, sizeof(prime));
+	for (int i = 2; i <= MAXN; i++)
+	{
+		if (!prime[i])
+		{
+			prime[++prime[0]] = i;
+		}
+		for (int j = 1; j <= prime[0] && prime[j] <= MAXN / i; j++)
+		{
+			prime[prime[j] * i] = 1;
+			if (i % prime[j] == 0)
+			{
+				break;
+			}
+		}
+	}
+}
+\end{lstlisting}
+
+\subsubsection{Miller Rabin}
+\begin{lstlisting}
+/*
+*  随机素数测试（伪素数原理）
+*  CALL: bool res = miller(n);
+*  快速测试n是否满足素数的“必要”条件，出错概率极低
+*  对于任意奇数n > 2和正整数s，算法出错概率≤2^(-s)
+*/
+
+int witness(int a, int n)
+{
+	int x, d = 1;
+	int i = ceil(log(n - 1.0) / log(2.0)) - 1;
+	for (; i >= 0; i--)
+	{
+		x = d;
+		d = (d * d) % n;
+		if (d == 1 && x != 1 && x != n - 1)
+		{
+			return 1;
+		}
+		if (((n - 1) & (1 << i)) > 0)
+		{
+			d = (d * a) % n;
+		}
+	}
+	return (d == 1 ? 0 : 1);
+}
+
+int miller(int n, int s = 50)
+{
+	if (n == 2)     //  质数返回1
+		return 1;
+	if (n % 2 == 0) //  偶数返回0
+		return 0;
+	int j, a;
+	for (j = 0; j < a; j++)
+	{
+		a = rand() * (n - 2) / RAND_MAX + 1;
+		//  rand()只能随机产生[0, RAND_MAX)内的整数
+		//  而且这个RAND_MAX只有32768直接%n的话是永远
+		//  也产生不了[RAND_MAX, n)之间的数
+		if (witness(a, n))
+		{
+			return 0;
+		}
+	}
+	return 1;
+}
+\end{lstlisting}
+
+\subsection{组合数}
+\begin{lstlisting}
+int com(int n, int r)   //  return C(n, r)
+{
+	if (n - r > r)
+	{
+		r = n - r;      //  C(n, r) = C(n, n - r)
+	}
+	int i, j, s = 1;
+	for (i = 0, j = 1; i < r; ++i)
+	{
+		s *= (n - i);
+		for (; j <= r && s % j == 0; ++j)
+		{
+			s /= j;
+		}
+	}
+	return s;
+}
+\end{lstlisting}
+
+\subsection{阶乘长度}
+\begin{lstlisting}
+#define PI 3.1415926
+
+int main()
+{
+	int n, a;
+	while (~scanf(“%d", &n))
+	{
+		a = (int)((0.5 * log(2 * PI * n) + n * log(n) - n) / log(10));
+		printf("%d\n", a + 1);
+	}
+	return 0;
+}
+\end{lstlisting}
+
+\subsection{全排列}
+\begin{lstlisting}
+#define MAX_N 10
+int n;                      //  共n个数
+int rcd[MAX_N];             //  记录每个位置填的数
+int used[MAX_N];            //  标记数是否用过
+int num[MAX_N];             //  存放输入的n个数
+
+void full_permutation(int l)
+{
+	int i;
+	if (l == n)
+	{
+		for (i = 0; i < n; i++)
+		{
+			printf("%d", rcd[i]);
+			if (i < n-1)
+			{
+				printf(" ");
+			}
+		}
+		printf("\n");
+		return ;
+	}
+	for (i = 0; i < n; i++)         //  枚举所有的数(n个),循环从开始
+	if (!used[i])
+	{                           //  若num[i]没有使用过, 则标记为已使用
+		used[i] = 1;
+		rcd[l] = num[i];        //  在l位置放上该数
+		full_permutation(l+1);  //  填下一个位置
+		used[i] = 0;            //  清标记
+	}
+}
+\end{lstlisting}
+
+\subsection{求斐波那契第N项}
+\begin{lstlisting}
+/*
+*  求斐波那契数列第N项，模MOD
+*/
+#define mod(a, m) ((a) % (m) + (m)) % (m)
+const int MOD = 1e9 + 9;
+struct MATRIX
+{
+	long long a[2][2];
+};
+
+MATRIX a;
+long long f[2];
+
+void ANS_Cf(MATRIX a)
+{
+	f[0] = mod(a.a[0][0] + a.a[1][0], MOD);
+	f[1] = mod(a.a[0][1] + a.a[1][1], MOD);
+	return ;
+}
+
+MATRIX MATRIX_Cf(MATRIX a, MATRIX b)
+{
+	MATRIX ans;
+	int k;
+	for (int i = 0; i < 2; i++)
+	{
+		for (int j = 0; j < 2; j++)
+		{
+			ans.a[i][j] = 0;
+			k = 0;
+			while (k < 2)
+			{
+				ans.a[i][j] += a.a[k][i] * b.a[j][k];
+				ans.a[i][j] = mod(ans.a[i][j], MOD);
+				++k;
+			}
+		}
+	}
+	return ans;
+}
+
+MATRIX MATRIX_Pow(MATRIX a, long long n)
+{
+	MATRIX ans;
+	ans.a[0][0] = 1;
+	ans.a[1][1] = 1;
+	ans.a[0][1] = 0;
+	ans.a[1][0] = 0;
+	while (n)
+	{
+		if (n & 1)
+		{
+			ans = MATRIX_Cf(ans, a);
+		}
+		n = n >> 1;
+		a = MATRIX_Cf(a, a);
+	}
+	return ans;
+}
+
+int main()
+{
+	long long n;
+	while (cin >> n)
+	{
+		if (n == 1)
+		{
+			cout << '1' << '\n';
+			continue;
+		}
+		a.a[0][0] = a.a[0][1] = a.a[1][0] = 1;
+		a.a[1][1] = 0;
+		a = MATRIX_Pow(a, n - 2);
+		ANS_Cf(a);
+		cout << f[0] << '\n';
+	}
+	return 0;
+}
+\end{lstlisting}
+
 
 
 \section{STL}
 
 
 \section{计算几何}
+\subsection{三角形面积}
+\begin{lstlisting}
+\\ 海伦公式
+int p = (a+b+c)/2;
+int s = sqrt(p * (p - a) * (p - b) * (p - c));
+
+\\ 两边和夹角
+\\ a, b为边, x为a和b的夹角
+s = 0.5 * a * b * sin(x/90.0*acos(0));
+\end{lstlisting}
 
 
 \section{其它}
+\subsection{数据类型范围}
+\begin{tabular}{|c|c|}
+	\hline 数据类型&范围\\
+	\hline char&-128 - 127\\
+	\hline int&2147483648 - 2147483647(十位)\\
+	\hline long long&-9223372036854775808 - 9223372036854775807(大约十九位)\\
+	\hline double&1.7 * 10\^308\\
+	\hline
+\end{tabular}
+
+\subsection{头文件}
+\begin{lstlisting}
+//#include<stdio.h>
+//#include<iostream>
+//#include<queue>
+//#include<algorithm>
+//#include<cstring>
+//#include<vector>
+//#include<cmath>
+//#include<string>
+//#include<map>
+//#include<set>
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+#define inf 0x3f3f3f3f
+typedef pair<int, int> P;
+const int maxn = 5e4+5;
+const ll mod = 1e9+7;
+\end{lstlisting}
+
+\subsection{Vim配置}
+\begin{lstlisting}
+// open ~/.vimrc
+syntax on
+set nu ts=4 sw=4 mouse=a cin
+colo desert
+
+map <C-A> ggVG"+y
+map <F5> :call CR()<CR>
+func! CR()
+exec "w"
+exec "!g++ -O2 -g -std=c++11 -Wall % -o %<"
+exec "! ./%<"   
+endfunc
+\end{lstlisting}
