@@ -2951,6 +2951,190 @@ int main()
 
 
 \section{STL}
+\subsection{vector}
+\begin{lstlisting}
+vector<int> s;      
+//  定义一个空的vector对象，存储的是int类型的元素
+vector<int> s(n);   
+//  定义一个含有n个int元素的vector对象
+vector<int> s(first, last); 
+//  定义一个vector对象，并从由迭代器first和last定义的序列[first, last)中复制初值
+
+s[i]                //  直接以下标方式访问容器中的元素
+s.front()           //  返回首元素
+s.back()            //  返回尾元素
+s.push_back(x)      //  向表尾插入元素x
+s.size()            //  返回表长
+s.empty()           //  表为空时，返回真，否则返回假
+s.pop_back()        //  删除表尾元素
+s.begin()           //  返回指向首元素的随机存取迭代器
+s.end()             //  返回指向尾元素的下一个位置的随机存取迭代器
+s.insert(it, val)   //  向迭代器it指向的元素前插入新元素val
+s.insert(it, n, val)//  向迭代器it指向的元素前插入n个新元素val
+s.insert(it, first, last)   
+//  将由迭代器first和last所指定的序列[first, last)插入到迭代器it指向的元素前面
+s.erase(it)         //  删除由迭代器it所指向的元素
+s.erase(first, last)//  删除由迭代器first和last所指定的序列[first, last)
+s.reserve(n)        //  预分配缓冲空间，使存储空间至少可容纳n个元素
+s.resize(n)         //  改变序列长度，超出的元素将会全部被删除，如果序列需要扩展（原空间小于n），元素默认值将填满扩展出的空间
+s.resize(n, val)    //	改变序列长度，超出的元素将会全部被删除，如果序列需要扩展（原空间小于n），val将填满扩展出的空间
+s.clear()           //  删除容器中的所有元素
+s.swap(v)           //  将s与另一个vector对象进行交换
+s.assign(first, last)	//  将序列替换成由迭代器first和last所指定的序列[first, last)，[first, last)不能是原序列中的一部分
+
+//  要注意的是，resize操作和clear操作都是对表的有效元素进行的操作，但并不一定会改变缓冲空间的大小
+//  vector上还定义了序列之间的比较操作运算符（>、<、>=、<=、==、!=），可以按照字典序比较两个序列。
+\end{lstlisting}
+
+
+\subsection{set}
+\begin{lstlisting}
+// 有序
+set<int> s;
+s.begin()       //  返回指向第一个元素的迭代器
+s.clear()       //  清除所有元素
+s.count()       //  返回某个值元素的个数
+s.empty()       //  如果集合为空，返回true(真）
+s.end()         //  返回指向最后一个元素之后的迭代器，不是最后一个元素
+s.equal_range() //  返回集合中与给定值相等的上下限的两个迭代器
+s.erase()       //  删除集合中的元素
+s.find()        //  返回一个指向被查找到元素的迭代器
+s.get_allocator()   //  返回集合的分配器
+s.insert()      //  在集合中插入元素
+s.lower_bound() //  返回指向大于（或等于）某值的第一个元素的迭代器
+s.key_comp()    //  返回一个用于元素间值比较的函数
+s.max_size()    //  返回集合能容纳的元素的最大限值
+s.rbegin()      //  返回指向集合中最后一个元素的反向迭代器
+s.rend()        //  返回指向集合中第一个元素的反向迭代器
+s.size()        //  集合中元素的数目
+s.swap()        //  交换两个集合变量
+s.upper_bound() //  返回大于某个值元素的迭代器
+s.value_comp()  //  返回一个用于比较元素间的值的函数
+
+// 多重集合
+multiset<int> s;
+// 操作类似
+\end{lstlisting}
+
+
+\subsection{pair}
+\begin{lstlisting}
+pair<T1, T2> p1;
+pair<T1, T2> p1(v1, v2);
+p1.first;
+p1.second;
+p1 = make_pair(v1, v2);
+
+vector<pair<int, int> > v;
+sort(v.begin(), v.end()); //根据pair的first排序，从小到大
+\end{lstlisting}
+
+
+\subsection{stack}
+\begin{lstlisting}
+stack<int> s;
+s.push(x);  //  入栈
+s.pop();    //  出栈
+s.top();    //  访问栈顶
+s.empty();  //  当栈空时，返回true
+s.size();   //  访问栈中元素个数
+\end{lstlisting}
+
+
+\subsection{queue}
+\begin{lstlisting}
+queue<int> q;
+q.push(x);  //  入队列
+q.pop();    //  出队列
+q.front();  //  访问队首元素
+q.back();   //  访问队尾元素
+q.empty();  //  判断队列是否为空
+q.size();   //  访问队列中的元素个数
+
+//priority_queue（优先队列）。优先队列与队列的差别在于优先队列不是按照入队的顺序出队，而是按照队列中元素的优先权出队列（默认为大者优先，也可以通过指定算子来指定自己的优先顺序）。
+
+priority_queue模版类有三个模版参数，第一个是元素类型，第二个是容器类型，第三个是比较算子。其中后两者都可以忽略，默认容器为vector，默认算子为less，即小的往前排，大的往后排（出队列时列尾元素先出队）。
+
+priority_queue<int> q;
+priority_queue<pair<int, int> > qq;	//  注意在两个尖括号之间一定要留空格，防止误判
+priority_queue<int, vector<int>, greater<int> > qqq;//  定义小的先出队列
+
+q.empty()     //  如果队列为空，则返回true，否则返回false
+q.size()      //  返回队列中元素的个数
+q.pop()       //  删除队首元素，但不返回其值
+q.top()       //  返回具有最高优先级的元素值，但不删除该元素
+q.push(item)  //  在基于优先级的适当位置插入新元素
+
+//deque双端队列
+#include<deque>
+deque<int> dep;
+
+deq.push_front(const T& x); //头插
+deq.push_back(const T& x);	//尾插
+deq.insert(iterator it, const T& x);	//任意位置
+
+deq.pop_front();	//删除头部
+deq.pop_back();		//删除尾部
+deq.erase(iterator it);		//删除任意
+
+deq[1]; // 并不会检查是否越界
+deq.at(1); // 以上两者的区别就是 at 会检查是否越界，是则抛出 out of range 异常
+deq.front();	//访问头部
+deq.back();		//访问尾部
+\end{lstlisting}
+
+
+\subsection{map}
+\begin{lstlisting}
+map<T1, T2> mp;
+mp[key] = value;
+T2 value = mp[key];
+mp.size();       //  返回元素个数
+mp.empty();      //  判断是否为空
+mp.clear();      //  清空所有元素
+\end{lstlisting}
+
+
+\subsection{bitset}
+\begin{lstlisting}
+const int MAXN = 32;
+
+bitset<MAXN> bt;            //  bt 包括 MAXN 位，下标 0 ~ MAXN - 1，默认初始化为 0
+bitset<MAXN> bt1(0xf);      //  0xf 表示十六进制数 f，对应二进制 1111，将 bt1 低 4 位初始化为 1
+bitset<MAXN> bt2(012);      //  012 表示八进制数 12，对应二进制 1010，即将 bt2 低 4 位初始化为 1010
+bitset<MAXN> bt3("1010");   //  将 bt3 低 4 位初始化为 1010
+
+bt.any()        //  bt 中是否存在置为 1 的二进制位？
+bt.none()       //  bt 中不存在置为 1 的二进制位吗？
+bt.count()      //  bt 中置为 1 的二进制位的个数
+bt.size()       //  bt 中二进制位的个数
+bt[pos]         //  访问 bt 中在 pos 处的二进制位
+bt.test(pos)    //  bt 中在 pos 处的二进制位是否为 1
+bt.set()        //  把 bt 中所有二进制位都置为 1
+bt.set(pos)     //  把 bt 中在 pos 处的二进制位置为 1
+bt.reset()      //  把 bt 中所有二进制位都置为 0
+bt.reset(pos)   //  把 bt 中在pos处的二进制位置为0
+bt.flip()       //  把 bt 中所有二进制位逐位取反
+bt.flip(pos)    //  把 bt 中在 pos 处的二进制位取反
+bt[pos].flip()  //  同上
+bt.to_ulong()   //  用 bt 中同样的二进制位返回一个 unsigned long 值
+\end{lstlisting}
+
+
+\subsection{algorithm}
+\begin{lstlisting}
+reverse(begin, end)	// 反转
+
+unique(begin, end)	// 需排序，去除重复的相邻元素，常用于求不同元素个数
+int n=unique(a, a+10)-a；
+
+lower_bound(begin, end, value)	//返回指向第一个不小于给定值的元素的迭代器
+
+upper_bound(begin, end, value)	//返回指向第一个大于给定值的元素的迭代器
+
+next_permutation(array)	//一种排列的下一种排列
+\end{lstlisting}
+
 
 
 \section{计算几何}
@@ -3012,4 +3196,222 @@ exec "w"
 exec "!g++ -O2 -g -std=c++11 -Wall % -o %<"
 exec "! ./%<"   
 endfunc
+\end{lstlisting}
+
+\subsection{输入挂}
+\subsubsection{关闭同步}
+\begin{lstlisting}
+#define endl '\n'
+
+ios::sync_whit_stdio(0);
+cin.tie(0);
+\end{lstlisting}
+
+\subsubsection{IO}
+\begin{lstlisting}
+#include<cstdio>
+
+inline void read(int &x) 	//看情况可去掉负数部分
+{
+	int t = 1;
+	char ch = getchar();
+	while(ch < '0' || ch > '9') { if(ch == '-') t = -1; ch = getchar();}
+	x = 0;
+	while(ch >= '0' && ch <= '9'){ x=x*10+ch-'0'; ch = getchar(); } 
+	x*=t;
+}
+
+void print(int i){
+	if(i<10){
+		putchar('0'+i);
+		return ;
+	}
+	print(i/10);
+	putchar('0'+i%10);
+}
+\end{lstlisting}
+
+\subsection{C++大数}
+\subsubsection{大数加法}
+\begin{lstlisting}
+string add(string a,string b)
+{	//两数相加
+	string res="";
+	int i=1;
+	string first="0";
+	while(true) {
+		int tai=a.size()-i;
+		int tbi=b.size()-i;
+		if(tai<0 && tbi<0)
+			break;			//从两数最右边开始模拟加法运算直到两数都遍历完
+		int ta,tb;
+		if(tai<0)
+			ta=0;	//如果没数则至为0
+		else
+			ta=a[tai]-'0';
+		if(tbi<0)
+			tb=0;	//如果没数则至为0
+		else
+			tb=b[tbi]-'0';
+		int temp=ta+tb+first[0]-'0';	//相加 first保存上一个的进位信息
+		first[0]=temp%10+'0';	//当前位是对10取余
+		res=first+res;
+		first[0]=temp/10+'0';	//进位是除10
+		i++;
+	}
+	if(first!="0")
+		res=first+res;	//如果进位还有则添加
+	if(res[0]=='0' && res.size()>1)	//去除前导0
+		res.erase(res.begin());
+	return res;
+}
+\end{lstlisting}
+
+\subsubsection{大数乘法}
+\begin{lstlisting}
+// 还需要配合大数加法
+string mul(string a,string b) {
+	if(b.size()==1) {	//如果b只有一位则使其分别相乘
+		string res="";
+		string first="0";
+		int mb=b[0]-'0';
+		for(int i=a.size()-1; i>=0; i--) {	//从最后开始依次计算
+			int temp=(a[i]-'0') * mb + (first[0]-'0');
+			first[0]=temp%10+'0';	//当前位
+			res=first+res;
+			first[0]=temp/10+'0';	//进位
+		}
+		if(first!="0") {
+			res=first+res;	//处理进位
+		}
+		if(res[0]=='0' && res.size()>1)
+			res.erase(res.begin());	//除去前导0
+		return res;
+		}
+	//否则则把b拆分为一位
+	string res="0";
+	string zero="";
+	for(int i=b.size()-1; i>=0; i--) {	//从b的最后一位开始
+		string temp=mul(a,b.substr(i,1));	//计算当前为与a相乘
+		res=add(res,temp+zero);	//在其后添加适当的0再与结果相加
+		zero=zero+"0";
+	}
+	return res;
+}
+\end{lstlisting}
+
+\subsubsection{整数转string}
+\begin{lstlisting}
+string inttostring(int m) {	//将整数转为string
+	string res="";
+	string temp="0";
+	while(m) {
+		temp[0]=m%10+'0';
+		res=temp+res;
+		m/=10;
+	}
+	if(res=="")
+		res="0";
+	return res;
+}
+\end{lstlisting}
+
+
+\subsection{Java}
+\begin{lstlisting}
+valueOf(parament); 将参数转换为制定的类型
+
+比如 int a=3;
+
+BigInteger b=BigInteger.valueOf(a);
+
+则b=3;
+
+String s=”12345”;
+
+BigInteger c=BigInteger.valueOf(s);
+
+则c=12345;
+
+// 常用函数
+1.赋值：
+BigInteger a=new BigInteger("1");
+BigInteger b=BigInteger.valueOf(1);
+
+2.运算：
+① add(); 大整数相加 
+BigInteger a=new BigInteger(“23”); 
+BigInteger b=new BigInteger(“34”); 
+a.add(b);
+
+②subtract(); 相减 
+③multiply(); 相乘 
+④divide(); 相除取整 
+⑤remainder(); 取余 
+⑥pow(); a.pow(b)=a^b 
+⑦gcd(); 最大公约数 
+⑧abs(); 绝对值 
+⑨negate(); 取反数 
+⑩mod(); a.mod(b)=a%b=a.remainder(b); 
+
+3.BigInteger构造函数： 
+一般用到以下两种： 
+BigInteger(String val); 
+将指定字符串转换为十进制表示形式； 
+BigInteger(String val,int radix); 
+将指定基数的 BigInteger 的字符串表示形式转换为 BigInteger
+
+4.基本常量： 
+A=BigInteger.ONE 1 
+B=BigInteger.TEN 10 
+C=BigInteger.ZERO 0 
+
+5.n.compareTo(BigInteger.ZERO)==0  //相当于n==0
+
+6.if(a[i].compareTo(n)>=0 && a[i].compareTo(m)<=0)   // a[i]>=n && a[i]<=m
+
+// 模板
+import java.math.BigInteger;
+import java.math.BigDecimal;
+import java.util.Scanner;
+import java.util.*;
+import java.io.*;
+public class Main {
+	public static void main(String [] args){
+		Scanner cin = new Scanner(System.in);
+		BigInteger a, b;
+		while(cin.hasNext())//相当于c语言中的scanf("%d", &n) != EOF
+		{
+			a = cin.nextBigInteger();
+			b = cin.nextBigInteger();
+			System.out.println(a.add(b));//大整数加法
+			System.out.println(a.subtract(b));//大整数减法
+			System.out.println(a.multiply(b));//大整数乘法
+			System.out.println(a.divide(b));//大整数除法，取整
+			System.out.println(a.remainder(b));//大整数取模
+			System.out.println(a.abs());//对大整数a取绝对值
+			int x = 0;
+			System.out.println(a.pow(x));//大整数a的x次幂
+			int y = 8;
+			System.out.println(a.toString(y));//返回大整数a的p进制用字符串表现的形式
+			System.out.println(a.toString());//返回大整数a的十进制用字符串表现的形式
+			//大整数之间的比较
+			if( a.compareTo(b) == 0 ) System.out.println("a == b"); //大整数a==b
+			else if( a.compareTo(b) > 0 ) System.out.println("a > b"); //大整数a>b
+			else if( a.compareTo(b) < 0 ) System.out.println("a < b"); //大整数a<b)
+			
+			BigDecimal c, d;
+			c = cin.nextBigDecimal();
+			d = cin.nextBigDecimal();
+			System.out.println(c.add(d));//浮点数相加
+			System.out.println(c.subtract(d));//浮点数相减
+			System.out.println(c.multiply(d));//浮点数相乘
+		}
+	}
+}
+
+// 输入方式
+int a = cin.nextInt();
+String s = cin.nextLine();
+double b = cin.nextDouble();
 \end{lstlisting}
