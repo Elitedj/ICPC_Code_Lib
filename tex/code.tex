@@ -3166,6 +3166,48 @@ int s = sqrt(p * (p - a) * (p - b) * (p - c));
 s = 0.5 * a * b * sin(x/90.0*acos(0));
 \end{lstlisting}
 
+\subsection{两圆面积交}
+\begin{lstlisting}
+const double PI = acos(-1);
+
+struct circle
+{
+	double x, y, r;
+};
+
+// 计算圆心距
+double dist(circle a, circle b)
+{
+	return sqrt((a.x-b.x)*(a.x-b.x) + (a.y-b.y)*(a.y-b.y));
+}
+
+double area(circle a, circle b)
+{
+	if((dist(a, b) + min(a.r, b.r)) <= max(a.r, b.r)) // 内含或重合
+	{
+		if(a.r < b.r)
+			return PI*a.r*a.r;
+		else
+			return PI*b.r*b.r;
+	}
+	else if(dist(a, b) >= (a.r + b.r)) // 相切
+	{
+		return 0.0;
+	}
+	else
+	{
+		double length = dist(a, b);
+		// 利用三角形余弦定理求圆心角
+		double d1 = 2*acos((a.r*a.r+length*length-b.r*b.r)/(2*a.r*length));
+		double d2 = 2*acos((b.r*b.r+length*length-a.r*a.r)/(2*b.r*length));
+		// 利用圆心角求得扇形面积再减去三角形面积后两部分相加就是相交面积
+		double area1 = a.r*a.r*d1/2 - a.r*a.r*sin(d1)/2;
+		double area2 = b.r*b.r*d2/2 - b.r*b.r*sin(d2)/2;
+		return area1 + area2;
+	}
+}
+\end{lstlisting}
+
 
 \section{其它}
 \subsection{数据类型范围}
