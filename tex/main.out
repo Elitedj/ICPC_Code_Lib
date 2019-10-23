@@ -49,7 +49,7 @@
 \BOOKMARK [2][-]{subsection.3.6}{最长有序子序列}{section.3}% 49
 \BOOKMARK [1][-]{section.4}{字符串}{}% 50
 \BOOKMARK [2][-]{subsection.4.1}{KMP}{section.4}% 51
-\BOOKMARK [3][-]{subsubsection.4.1.1}{EXKMP}{subsection.4.1}% 52
+\BOOKMARK [2][-]{subsection.4.2}{EXKMP}{section.4}% 52
 \BOOKMARK [1][-]{section.5}{数学}{}% 53
 \BOOKMARK [2][-]{subsection.5.1}{快速幂}{section.5}% 54
 \BOOKMARK [2][-]{subsection.5.2}{逆序数}{section.5}% 55
