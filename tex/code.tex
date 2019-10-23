@@ -2343,6 +2343,129 @@ int main()
 }
 \end{lstlisting}
 
+
+\subsection{数位DP}
+\subsubsection{HDU 2089 不要62}
+\begin{lstlisting}
+// 求区间[n, m]中不含4和62的数字个数
+// dp[pos][sta]:在第pos位中，前一位是否为6的满足条件的数字个数。
+// sta: 0表示前一位不为6, 1:表示前一位为6
+
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+typedef pair<int, int> P;
+const int maxn = 1e6+5;
+const int inf = 0x3f3f3f3f;
+const int mod = 1e9+7;
+const double PI = acos(-1);
+
+
+int n, m;
+int dp[10][2];
+int num[10];
+
+int dfs(int pos, int pre, int sta, bool limit)
+{
+	if(pos==-1)return 1;
+	if(!limit && dp[pos][sta]!=-1)return dp[pos][sta];
+	int up = limit?num[pos]:9;
+	int tmp = 0;
+	for(int i=0;i<=up;i++)
+	{
+		if(pre==6 && i==2)continue;
+		if(i==4)continue;
+		tmp += dfs(pos-1, i, i==6, limit&&i==num[pos]);
+	}
+	if(!limit) dp[pos][sta] = tmp;
+	return tmp;
+}
+
+int slove(int x)
+{
+	int pos = 0;
+	while(x)
+	{
+		num[pos++] = x%10;
+		x/=10;
+	}
+	return dfs(pos-1, -1, 0, true);
+}
+
+int main()
+{
+	while(~scanf("%d%d", &n, &m) && n && m)
+	{
+		memset(dp, -1, sizeof(dp));
+		printf("%d\n", slove(m) - slove(n-1));
+	}
+	return 0;
+}
+\end{lstlisting}
+
+\subsubsection{SCOI 2009 Windy数}
+\begin{lstlisting}
+// 求区间[l, r]中不含前导零且相邻位之差的绝对值大于等于2的数的个数
+
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+typedef pair<int, int> P;
+const int maxn = 1e6+5;
+const int inf = 0x3f3f3f3f;
+const int mod = 1e9+7;
+const double PI = acos(-1);
+
+
+ll l, r;
+ll a[20], dp[20][20];
+
+ll dfs(int pos, int pre, int sta, bool limit)
+{
+	if(pos==-1)return 1;
+	if(!limit && dp[pos][pre]!=-1)return dp[pos][pre];
+	int up = limit ? a[pos] : 9;
+	ll ans= 0;
+	for(int i=0;i<=up;i++)
+	{
+		if(sta!=0)
+		{
+			ans += dfs(pos-1, i, sta&&(i==0), limit&&(i==up));
+		}
+		else
+		{
+			if(abs(pre-i)>=2)
+			{
+				ans += dfs(pos-1, i, sta&&(i==0), limit&&(i==up));
+			}
+		}
+	}
+	if(!limit&&pre!=0) dp[pos][pre] = ans;
+	return ans;
+}
+
+ll slove(int x)
+{
+	int pos = 0;
+	while(x)
+	{
+		a[pos++] = x%10;
+		x/=10;
+	}
+	return dfs(pos-1, 0, 1, true);
+}
+
+int main()
+{
+	memset(dp, -1, sizeof(dp));
+	scanf("%lld%lld", &l, &r);
+	printf("%lld\n", slove(r) - slove(l-1));
+	return 0;
+}
+\end{lstlisting}
+
 \subsection{区间DP}
 \subsubsection{51Nod 1021 石子合并}
 \begin{lstlisting}
@@ -2570,7 +2693,146 @@ int main()
 
 
 \section{字符串}
+\subsection{KMP}
+\begin{lstlisting}
+// 能够获得t在s中出现的所有位置
 
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+typedef pair<int, int> P;
+const int maxn = 1e6+5;
+const int inf = 0x3f3f3f3f;
+const int mod = 1e9+7;
+const double PI = acos(-1);
+
+
+char s[maxn], t[maxn];
+int ne[maxn];
+int ls, lt;
+
+void init()
+{
+	scanf("%s", s+1);
+	scanf("%s", t+1);
+	ls = strlen(s+1);
+	lt = strlen(t+1);
+}
+
+void get_ne()
+{
+	int j = 0;
+	for(int i=2;i<=lt;i++)
+	{
+		while(j && t[i]!=t[j+1])
+			j = ne[j];
+		if(t[i]==t[j+1])j++;
+		ne[i] = j;
+	}
+}
+
+void kmp()
+{
+	int j=0;
+	vector<int> v;
+	for(int i=1;i<=ls;i++)
+	{
+		while(j>0 && s[i]!=t[j+1])j = ne[j];
+		if(s[i]==t[j+1])j++;
+		if(j==lt)
+		{
+			v.push_back(i-lt+1);
+			j = ne[j];
+		}
+	}
+	for(auto x : v)printf("%d\n", x);
+}
+
+int main()
+{
+	init();
+	get_ne();
+	kmp();
+	return 0;
+}
+\end{lstlisting}
+
+\subsubsection{EXKMP}
+\begin{lstlisting}
+// 求t与s的所有后缀的最大前缀长度， 存于ex数组
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+typedef pair<int, int> P;
+const int maxn = 1e6+5;
+const int inf = 0x3f3f3f3f;
+const int mod = 1e9+7;
+const double PI = acos(-1);
+
+
+char s[maxn], t[maxn];
+int ne[maxn], ex[maxn];
+
+void get_ne(char *s)
+{
+	int i=0, j, po, len=strlen(s);
+	ne[0] = len;
+	while(s[i]==s[i+1] && i+1<len)i++;
+	ne[1] = i;
+	po = 1;
+	for(int i=2;i<len;i++)
+	{
+		if(ne[i-po]+i < ne[po]+po)
+			ne[i] = ne[i-po];
+		else
+		{
+			j = ne[po]+po-i;
+			if(j<0)j=0;
+			while(i+j < len && s[j] == s[j+i])j++;
+			ne[i] = j;
+			po = i;
+		}
+	}
+}
+
+void exkmp(char *s, char *t)
+{
+	int i=0, j, po, ls=strlen(s), lt=strlen(t);
+	get_ne(t);
+	while(s[i]==t[i] && i<lt && i<ls)i++;
+	ex[0] = i;
+	po = 0;
+	for(i=1;i<ls;i++)
+	{
+		if(ne[i-po]+i < ex[po]+po)
+			ex[i] = ne[i-po];
+		else
+		{
+			j = ex[po] + po -i;
+			if(j<0) j=0;
+			while(i+j<ls && j<lt && s[j+i]==t[j])j++;
+			ex[i] = j;
+			po = i;
+		}
+	}
+}
+
+int main()
+{
+	scanf("%s", s);
+	scanf("%s", t);
+	exkmp(s, t);
+	for(int i=0;i<strlen(s);i++)
+	{
+		if(i==0)printf("%d", ex[i]);
+		else printf(" %d", ex[i]);
+	}
+	printf("\n");
+	return 0;
+}
+\end{lstlisting}
 
 \section{数学}
 \subsection{快速幂}
