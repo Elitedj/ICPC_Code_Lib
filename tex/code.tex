@@ -1342,6 +1342,87 @@ int main()
 }
 \end{lstlisting}
 
+\subsection{悬线法 BZOJ3039}
+\begin{lstlisting}
+// 悬线法求最大子矩阵
+// 给定n*m的矩阵，含F和R，求最大的全F矩阵的面积×3
+
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+typedef pair<int, int> P;
+const int maxn = 1e3+5;
+const int inf = 0x3f3f3f3f;
+const ll INF = 0x3f3f3f3f3f3f3f3f;
+const int mod = 1e9+7;
+const double PI = acos(-1);
+
+
+char mp[maxn][maxn];
+int l[maxn][maxn], r[maxn][maxn], h[maxn][maxn];
+int n, m;
+
+int main()
+{
+	ios::sync_with_stdio(0);
+	cin>>n>>m;
+	for(int i=1;i<=n;i++)
+	{
+		for(int j=1;j<=m;j++)
+		{
+			cin>>mp[i][j];
+		}
+	}
+	for(int i=1;i<=n;i++)
+	{
+		int tmp = 1;
+		for(int j=1;j<=m;j++)
+		{
+			if(mp[i][j] == 'F')
+			{
+				l[i][j] = tmp;
+				if(mp[i-1][j]=='F')
+					l[i][j] = max(l[i][j], l[i-1][j]);
+			}
+			else tmp = j+1;
+		}
+	}
+	for(int i=1;i<=n;i++)
+	{
+		int tmp = m;
+		for(int j=m;j>=1;j--)
+		{
+			if(mp[i][j]=='F')
+			{
+				r[i][j] = tmp;
+				if(mp[i-1][j] == 'F')
+					r[i][j] = min(r[i][j], r[i-1][j]);
+			}
+			else tmp = j-1;
+		}
+	}
+	for(int i=1;i<=n;i++)
+	{
+		for(int j=1;j<=m;j++)
+		{
+			if(mp[i][j] == 'F')
+			h[i][j] = h[i-1][j]+1;
+		}
+	}
+	int ans = 0;
+	for(int i=1;i<=n;i++)
+	{
+		for(int j=1;j<=m;j++)
+		{
+			if(mp[i][j]=='F')
+				ans = max(ans, h[i][j]*(r[i][j]-l[i][j]+1));
+		}
+	}
+	cout<<3*ans<<endl;
+	return 0;
+}
+\end{lstlisting}
 
 \section{数据结构}
 \subsection{并查集}
