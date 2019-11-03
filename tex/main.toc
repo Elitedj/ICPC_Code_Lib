@@ -27,73 +27,75 @@
 \contentsline {subsection}{\numberline {1.14}悬线法 BZOJ3039}{19}{subsection.1.14}% 
 \contentsline {section}{\numberline {2}数据结构}{20}{section.2}% 
 \contentsline {subsection}{\numberline {2.1}并查集}{20}{subsection.2.1}% 
-\contentsline {subsection}{\numberline {2.2}ST表}{20}{subsection.2.2}% 
-\contentsline {subsection}{\numberline {2.3}树状数组}{21}{subsection.2.3}% 
-\contentsline {subsection}{\numberline {2.4}线段树}{21}{subsection.2.4}% 
-\contentsline {subsubsection}{\numberline {2.4.1}单点修改+区间求和 HDU1166}{21}{subsubsection.2.4.1}% 
-\contentsline {subsubsection}{\numberline {2.4.2}区间修改+区间求和 POJ3465}{22}{subsubsection.2.4.2}% 
-\contentsline {subsubsection}{\numberline {2.4.3}单点修改+区间最值 HDU1754}{23}{subsubsection.2.4.3}% 
-\contentsline {subsubsection}{\numberline {2.4.4}区间染色+统计+离散化 POJ2528}{24}{subsubsection.2.4.4}% 
-\contentsline {subsubsection}{\numberline {2.4.5}线段树+扫描线求矩阵覆盖周长 POJ1177}{25}{subsubsection.2.4.5}% 
-\contentsline {subsubsection}{\numberline {2.4.6}线段树+扫描线求矩阵面积并 HDU1542}{27}{subsubsection.2.4.6}% 
-\contentsline {subsubsection}{\numberline {2.4.7}状压+线段树维护区间26字母种类 CF1234D}{28}{subsubsection.2.4.7}% 
-\contentsline {subsection}{\numberline {2.5}主席树}{29}{subsection.2.5}% 
-\contentsline {subsubsection}{\numberline {2.5.1}区间第K大}{29}{subsubsection.2.5.1}% 
-\contentsline {subsubsection}{\numberline {2.5.2}动态区间第K大(主席树套树状数组) ZOJ2112}{31}{subsubsection.2.5.2}% 
+\contentsline {subsection}{\numberline {2.2}带权并查集}{20}{subsection.2.2}% 
+\contentsline {subsubsection}{\numberline {2.2.1}BZOJ1202}{20}{subsubsection.2.2.1}% 
+\contentsline {subsection}{\numberline {2.3}ST表}{21}{subsection.2.3}% 
+\contentsline {subsection}{\numberline {2.4}树状数组}{21}{subsection.2.4}% 
+\contentsline {subsection}{\numberline {2.5}线段树}{22}{subsection.2.5}% 
+\contentsline {subsubsection}{\numberline {2.5.1}单点修改+区间求和 HDU1166}{22}{subsubsection.2.5.1}% 
+\contentsline {subsubsection}{\numberline {2.5.2}区间修改+区间求和 POJ3465}{23}{subsubsection.2.5.2}% 
+\contentsline {subsubsection}{\numberline {2.5.3}单点修改+区间最值 HDU1754}{24}{subsubsection.2.5.3}% 
+\contentsline {subsubsection}{\numberline {2.5.4}区间染色+统计+离散化 POJ2528}{25}{subsubsection.2.5.4}% 
+\contentsline {subsubsection}{\numberline {2.5.5}线段树+扫描线求矩阵覆盖周长 POJ1177}{26}{subsubsection.2.5.5}% 
+\contentsline {subsubsection}{\numberline {2.5.6}线段树+扫描线求矩阵面积并 HDU1542}{28}{subsubsection.2.5.6}% 
+\contentsline {subsubsection}{\numberline {2.5.7}状压+线段树维护区间26字母种类 CF1234D}{29}{subsubsection.2.5.7}% 
+\contentsline {subsection}{\numberline {2.6}主席树}{30}{subsection.2.6}% 
+\contentsline {subsubsection}{\numberline {2.6.1}区间第K大}{30}{subsubsection.2.6.1}% 
+\contentsline {subsubsection}{\numberline {2.6.2}动态区间第K大(主席树套树状数组) ZOJ2112}{31}{subsubsection.2.6.2}% 
 \contentsline {section}{\numberline {3}DP}{33}{section.3}% 
 \contentsline {subsection}{\numberline {3.1}背包}{33}{subsection.3.1}% 
 \contentsline {subsection}{\numberline {3.2}数位DP}{34}{subsection.3.2}% 
 \contentsline {subsubsection}{\numberline {3.2.1}HDU 2089 不要62}{34}{subsubsection.3.2.1}% 
-\contentsline {subsubsection}{\numberline {3.2.2}SCOI 2009 Windy数}{34}{subsubsection.3.2.2}% 
-\contentsline {subsection}{\numberline {3.3}区间DP}{35}{subsection.3.3}% 
-\contentsline {subsubsection}{\numberline {3.3.1}51Nod 1021 石子合并}{35}{subsubsection.3.3.1}% 
-\contentsline {subsection}{\numberline {3.4}最长公共递增子序列}{35}{subsection.3.4}% 
-\contentsline {subsection}{\numberline {3.5}最长公共子序列}{36}{subsection.3.5}% 
-\contentsline {subsection}{\numberline {3.6}最长有序子序列}{36}{subsection.3.6}% 
+\contentsline {subsubsection}{\numberline {3.2.2}SCOI 2009 Windy数}{35}{subsubsection.3.2.2}% 
+\contentsline {subsection}{\numberline {3.3}区间DP}{36}{subsection.3.3}% 
+\contentsline {subsubsection}{\numberline {3.3.1}51Nod 1021 石子合并}{36}{subsubsection.3.3.1}% 
+\contentsline {subsection}{\numberline {3.4}最长公共递增子序列}{36}{subsection.3.4}% 
+\contentsline {subsection}{\numberline {3.5}最长公共子序列}{37}{subsection.3.5}% 
+\contentsline {subsection}{\numberline {3.6}最长有序子序列}{37}{subsection.3.6}% 
 \contentsline {section}{\numberline {4}字符串}{38}{section.4}% 
 \contentsline {subsection}{\numberline {4.1}KMP}{38}{subsection.4.1}% 
-\contentsline {subsection}{\numberline {4.2}EXKMP}{38}{subsection.4.2}% 
-\contentsline {subsection}{\numberline {4.3}字符串Hash}{39}{subsection.4.3}% 
-\contentsline {subsubsection}{\numberline {4.3.1}自然溢出}{39}{subsubsection.4.3.1}% 
+\contentsline {subsection}{\numberline {4.2}EXKMP}{39}{subsection.4.2}% 
+\contentsline {subsection}{\numberline {4.3}字符串Hash}{40}{subsection.4.3}% 
+\contentsline {subsubsection}{\numberline {4.3.1}自然溢出}{40}{subsubsection.4.3.1}% 
 \contentsline {section}{\numberline {5}数学}{40}{section.5}% 
 \contentsline {subsection}{\numberline {5.1}快速幂}{40}{subsection.5.1}% 
-\contentsline {subsection}{\numberline {5.2}逆序数}{40}{subsection.5.2}% 
+\contentsline {subsection}{\numberline {5.2}逆序数}{41}{subsection.5.2}% 
 \contentsline {subsection}{\numberline {5.3}无序序列变有序的最少交换次数}{41}{subsection.5.3}% 
 \contentsline {subsubsection}{\numberline {5.3.1}相邻元素交换}{41}{subsubsection.5.3.1}% 
 \contentsline {subsubsection}{\numberline {5.3.2}任意元素交换}{41}{subsubsection.5.3.2}% 
-\contentsline {subsection}{\numberline {5.4}GCD}{41}{subsection.5.4}% 
-\contentsline {subsubsection}{\numberline {5.4.1}非递归}{41}{subsubsection.5.4.1}% 
-\contentsline {subsubsection}{\numberline {5.4.2}递归}{41}{subsubsection.5.4.2}% 
-\contentsline {subsection}{\numberline {5.5}EXGCD}{41}{subsection.5.5}% 
+\contentsline {subsection}{\numberline {5.4}GCD}{42}{subsection.5.4}% 
+\contentsline {subsubsection}{\numberline {5.4.1}非递归}{42}{subsubsection.5.4.1}% 
+\contentsline {subsubsection}{\numberline {5.4.2}递归}{42}{subsubsection.5.4.2}% 
+\contentsline {subsection}{\numberline {5.5}EXGCD}{42}{subsection.5.5}% 
 \contentsline {subsection}{\numberline {5.6}素数}{42}{subsection.5.6}% 
 \contentsline {subsubsection}{\numberline {5.6.1}判断小于MAXN的数是否为素数}{42}{subsubsection.5.6.1}% 
-\contentsline {subsubsection}{\numberline {5.6.2}生成小于等于MAXN的全部素数}{42}{subsubsection.5.6.2}% 
-\contentsline {subsubsection}{\numberline {5.6.3}Miller Rabin}{42}{subsubsection.5.6.3}% 
-\contentsline {subsection}{\numberline {5.7}组合数}{43}{subsection.5.7}% 
-\contentsline {subsection}{\numberline {5.8}阶乘长度}{43}{subsection.5.8}% 
-\contentsline {subsection}{\numberline {5.9}全排列}{43}{subsection.5.9}% 
-\contentsline {subsection}{\numberline {5.10}求斐波那契第N项}{44}{subsection.5.10}% 
-\contentsline {section}{\numberline {6}STL}{45}{section.6}% 
-\contentsline {subsection}{\numberline {6.1}vector}{45}{subsection.6.1}% 
-\contentsline {subsection}{\numberline {6.2}set}{45}{subsection.6.2}% 
+\contentsline {subsubsection}{\numberline {5.6.2}生成小于等于MAXN的全部素数}{43}{subsubsection.5.6.2}% 
+\contentsline {subsubsection}{\numberline {5.6.3}Miller Rabin}{43}{subsubsection.5.6.3}% 
+\contentsline {subsection}{\numberline {5.7}组合数}{44}{subsection.5.7}% 
+\contentsline {subsection}{\numberline {5.8}阶乘长度}{44}{subsection.5.8}% 
+\contentsline {subsection}{\numberline {5.9}全排列}{44}{subsection.5.9}% 
+\contentsline {subsection}{\numberline {5.10}求斐波那契第N项}{45}{subsection.5.10}% 
+\contentsline {section}{\numberline {6}STL}{46}{section.6}% 
+\contentsline {subsection}{\numberline {6.1}vector}{46}{subsection.6.1}% 
+\contentsline {subsection}{\numberline {6.2}set}{46}{subsection.6.2}% 
 \contentsline {subsection}{\numberline {6.3}pair}{46}{subsection.6.3}% 
 \contentsline {subsection}{\numberline {6.4}stack}{46}{subsection.6.4}% 
-\contentsline {subsection}{\numberline {6.5}queue}{46}{subsection.6.5}% 
-\contentsline {subsection}{\numberline {6.6}map}{46}{subsection.6.6}% 
+\contentsline {subsection}{\numberline {6.5}queue}{47}{subsection.6.5}% 
+\contentsline {subsection}{\numberline {6.6}map}{47}{subsection.6.6}% 
 \contentsline {subsection}{\numberline {6.7}bitset}{47}{subsection.6.7}% 
-\contentsline {subsection}{\numberline {6.8}algorithm}{47}{subsection.6.8}% 
-\contentsline {section}{\numberline {7}计算几何}{47}{section.7}% 
-\contentsline {subsection}{\numberline {7.1}三角形面积}{47}{subsection.7.1}% 
-\contentsline {subsection}{\numberline {7.2}两圆面积交}{47}{subsection.7.2}% 
-\contentsline {section}{\numberline {8}其它}{48}{section.8}% 
-\contentsline {subsection}{\numberline {8.1}数据类型范围}{48}{subsection.8.1}% 
-\contentsline {subsection}{\numberline {8.2}头文件}{48}{subsection.8.2}% 
-\contentsline {subsection}{\numberline {8.3}Vim配置}{48}{subsection.8.3}% 
-\contentsline {subsection}{\numberline {8.4}输入挂}{48}{subsection.8.4}% 
-\contentsline {subsubsection}{\numberline {8.4.1}关闭同步}{48}{subsubsection.8.4.1}% 
-\contentsline {subsubsection}{\numberline {8.4.2}IO}{48}{subsubsection.8.4.2}% 
+\contentsline {subsection}{\numberline {6.8}algorithm}{48}{subsection.6.8}% 
+\contentsline {section}{\numberline {7}计算几何}{48}{section.7}% 
+\contentsline {subsection}{\numberline {7.1}三角形面积}{48}{subsection.7.1}% 
+\contentsline {subsection}{\numberline {7.2}两圆面积交}{48}{subsection.7.2}% 
+\contentsline {section}{\numberline {8}其它}{49}{section.8}% 
+\contentsline {subsection}{\numberline {8.1}数据类型范围}{49}{subsection.8.1}% 
+\contentsline {subsection}{\numberline {8.2}头文件}{49}{subsection.8.2}% 
+\contentsline {subsection}{\numberline {8.3}Vim配置}{49}{subsection.8.3}% 
+\contentsline {subsection}{\numberline {8.4}输入挂}{49}{subsection.8.4}% 
+\contentsline {subsubsection}{\numberline {8.4.1}关闭同步}{49}{subsubsection.8.4.1}% 
+\contentsline {subsubsection}{\numberline {8.4.2}IO}{49}{subsubsection.8.4.2}% 
 \contentsline {subsection}{\numberline {8.5}C++大数}{49}{subsection.8.5}% 
 \contentsline {subsubsection}{\numberline {8.5.1}大数加法}{49}{subsubsection.8.5.1}% 
-\contentsline {subsubsection}{\numberline {8.5.2}大数乘法}{49}{subsubsection.8.5.2}% 
-\contentsline {subsubsection}{\numberline {8.5.3}整数转string}{49}{subsubsection.8.5.3}% 
+\contentsline {subsubsection}{\numberline {8.5.2}大数乘法}{50}{subsubsection.8.5.2}% 
+\contentsline {subsubsection}{\numberline {8.5.3}整数转string}{50}{subsubsection.8.5.3}% 
 \contentsline {subsection}{\numberline {8.6}Java}{50}{subsection.8.6}% 

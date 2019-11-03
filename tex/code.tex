@@ -1452,6 +1452,63 @@ void join(int x,int y)
 		pre[fx]=fy;
 }
 \end{lstlisting}
+\subsection{带权并查集}
+\subsubsection{BZOJ1202}
+\begin{lstlisting}
+\\ 给出n个月份，每个月份都有营业额
+\\ m个判断，表示区间[l, r]的和为w
+\\ 判断是否有矛盾
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+typedef pair<int, int> P;
+const int maxn = 1e3+5;
+const int inf = 0x3f3f3f3f;
+const ll INF = 0x3f3f3f3f3f3f3f3f;
+const int mod = 1e9+7;
+const double PI = acos(-1);
+
+
+
+int n, m;
+int fa[105], d[105];
+int find(int x)
+{
+	if(fa[x]==x)return x;
+	int xx = find(fa[x]);
+	d[x] += d[fa[x]];
+	return fa[x] = xx;
+}
+int main()
+{
+	int t;
+	scanf("%d", &t);
+	while(t--)
+	{
+		scanf("%d%d", &n, &m);
+		memset(d, 0, sizeof(d));
+		for(int i=0;i<=n;i++) fa[i] = i;
+		int f = 1;
+		while(m--)
+		{
+			int s, t ,w;
+			scanf("%d%d%d", &s, &t, &w);
+			s--;
+			int fas = find(s), fat = find(t);
+			if(fas != fat)
+			{
+				fa[fat] = fas;
+				d[fat] = d[s]+w-d[t];
+			}
+			else if(d[t]-d[s]!=w)f=0;
+		}
+		if(f)printf("true\n");
+		else printf("false\n");
+	}
+	return 0;
+}
+\end{lstlisting}
 
 \subsection{ST表}
 \begin{lstlisting}
