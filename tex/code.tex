@@ -2781,7 +2781,202 @@ int upper(int x)
 }
 \end{lstlisting}
 
+\subsection{树链剖分}
+\begin{lstlisting}
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+typedef pair<int, int> P;
+const int maxn = 1e6+5;
+const int inf = 0x3f3f3f3f;
+const ll INF = 0x3f3f3f3f3f3f3f3f;
+const int mod = 1e9+7;
+const double PI = acos(-1);
 
+
+#define ls k<<1
+#define rs k<<1|1
+
+ll root = 1;
+struct node
+{
+	ll u,v,w,nxt;
+}edge[maxn];
+ll head[maxn];
+ll num;
+
+inline void addedge(ll x, ll y)
+{
+	edge[++num].u = x;
+	edge[num].v = y;
+	edge[num].nxt = head[x];
+	head[x] = num;
+}
+
+struct Tree
+{
+	// f是lazy标记, siz是区间大小
+	ll l, r, f, w, siz;
+}T[maxn<<2];
+// a建线段树用，即重新排序后的结点顺序
+// b记录输入点权, tot[i]记录顶点i子树的大小, idx记录编号, deep深度
+// son记录重儿子, top[i]记录i所在链的起点, fa记录父亲
+ll a[maxn], b[maxn], tot[maxn], idx[maxn], deep[maxn];
+ll son[maxn], top[maxn], fa[maxn], cnt;
+
+void update(ll k)
+{
+	T[k].w = T[ls].w + T[rs].w;
+}
+void pushdown(ll k)
+{
+	if(!T[k].f)return ;
+	T[ls].w += T[k].f * T[ls].siz;
+	T[rs].w += T[k].f * T[rs].siz;
+	T[ls].f += T[k].f;
+	T[rs].f += T[k].f;
+	T[k].f = 0;
+}
+ll dfs1(ll now, ll f, ll dep)
+{
+	deep[now] = dep;
+	tot[now] = 1;
+	fa[now] = f;
+	ll maxson = -1;
+	for(ll i=head[now]; ~i; i=edge[i].nxt)
+	{
+		if(edge[i].v==f)continue;
+		tot[now] += dfs1(edge[i].v, now, dep+1);
+		if(tot[edge[i].v]>maxson)
+			maxson=tot[edge[i].v], son[now]=edge[i].v;
+	}
+	return tot[now];
+}
+void dfs2(ll now, ll topf)
+{
+	idx[now] = ++cnt;
+	a[cnt] = b[now];
+	top[now] = topf;
+	if(!son[now])return;
+	dfs2(son[now], topf);
+	for(ll i=head[now]; ~i; i=edge[i].nxt)
+		if(!idx[edge[i].v])
+			dfs2(edge[i].v, edge[i].v);
+}
+void build(ll k, ll l, ll r)
+{
+	T[k].l=l; T[k].r=r; T[k].siz=r-l+1;
+	if(l==r)
+	{
+		T[k].w = a[l];
+		return;
+	}
+	ll mid = (l+r)>>1;
+	build(ls, l, mid);
+	build(rs, mid+1, r);
+	update(k);
+}
+// 单点修改
+void pointadd(ll k, ll pos, ll val)
+{
+	if(T[k].l == T[k].r)
+	{
+		T[k].w += val;return;
+	}
+	pushdown(k);
+	ll mid = (T[k].l+T[k].r)>>1;
+	if(pos<=mid)pointadd(ls, pos, val);
+	if(pos>mid)pointadd(rs, pos, val);
+	update(k);
+}
+// 区间修改
+void intervaladd(ll k, ll l, ll r, ll val)
+{
+	if(l<=T[k].l && T[k].r <= r)
+	{
+		T[k].w += T[k].siz*val;
+		T[k].f += val;
+		return ;
+	}
+	pushdown(k);
+	ll mid = (T[k].l + T[k].r)>>1;
+	if(l<=mid)intervaladd(ls, l, r, val);
+	if(r>mid)intervaladd(rs, l, r, val);
+	update(k);
+}
+// 区间查询
+ll intervalask(ll k, ll l, ll r)
+{
+	ll ans = 0;
+	if(l <= T[k].l && T[k].r <= r)
+	{
+		ans += T[k].w;
+		return ans;
+	}
+	pushdown(k);
+	ll mid = (T[k].l + T[k].r)>>1;
+	if(l<=mid)ans+=intervalask(ls, l, r);
+	if(r>mid)ans+=intervalask(rs, l, r);
+	return ans;
+}
+// 树上x到y的路径权值和
+ll treesum(ll x, ll y)
+{
+	ll ans = 0;
+	while(top[x]!=top[y])
+	{
+		if(deep[top[x]] < deep[top[y]])
+			swap(x, y);
+		ans += intervalask(1, idx[top[x]], idx[x]);
+		x=fa[top[x]];
+	}
+	if(deep[x]>deep[y])
+		swap(x, y);
+	ans += intervalask(1, idx[x], idx[y]);
+	return ans;
+}
+
+
+int main()
+{
+	memset(head, -1, sizeof(head));
+	ll n, m;
+	scanf("%lld%lld", &n, &m);
+	for(int i=1;i<=n;i++)
+		scanf("%lld", &b[i]);
+	for(int i=1;i<n;i++)
+	{
+		ll x, y;
+		scanf("%lld%lld", &x, &y);
+		addedge(x, y); addedge(y, x);
+	}
+	dfs1(root, 0, 1);
+	dfs2(root, root);
+	build(1, 1, n);
+	while(m--)
+	{
+		ll opt, x, val;
+		scanf("%lld",&opt);
+		if(opt==1)
+		{
+			scanf("%lld%lld", &x, &val);
+			pointadd(1, idx[x], val);
+		}
+		else if(opt==2)
+		{
+			scanf("%lld%lld", &x, &val);
+			intervaladd(1, idx[x], idx[x]+tot[x]-1, val);
+		}
+		else
+		{
+			scanf("%lld", &x);
+			printf("%lld\n", treesum(root, x));
+		}
+	}
+	return 0;
+}
+\end{lstlisting}
 
 
 
@@ -4773,8 +4968,10 @@ double area(circle a, circle b)
 \subsection{矩形相交}
 \begin{lstlisting}
 //一.相交面积==白色
-//这做法看起来思路简单但是很多坑
-//应该是两个黑白相交面积之和-黑黑白相交面积，而不是-黑黑相交面积！(当时就wa在这)
+//这做法看起来思路简单但是很多坑
+
+//应该是两个黑白相交面积之和-黑黑白相交面积，而不是-黑黑相交面积！(当时就wa在这)
+
 //求相交面积先判断是否相交（即x1,x2大小与y1,y2大小）
 #include<bits/stdc++.h>
 using namespace std;
