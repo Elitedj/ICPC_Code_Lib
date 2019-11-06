@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.999991 (TeX Live 2019) (preloaded format=xelatex 2019.10.15)  6 NOV 2019 10:15
+This is XeTeX, Version 3.14159265-2.6-0.999991 (TeX Live 2019) (preloaded format=xelatex 2019.10.15)  6 NOV 2019 22:11
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1426,64 +1426,74 @@ Underfull \hbox (badness 10000) in paragraph at lines 3733--3740
 
  []
 
-[47] [48] [49] [50]
-Underfull \hbox (badness 10000) in paragraph at lines 4123--4142
+[47] [48]
+Underfull \hbox (badness 10000) in paragraph at lines 3973--3979
+
+ []
+
+[49] [50]
+Underfull \hbox (badness 10000) in paragraph at lines 4066--4077
+
+ []
+
+[51] [52] [53] [54]
+Underfull \hbox (badness 10000) in paragraph at lines 4461--4480
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 4123--4142
+Underfull \hbox (badness 10000) in paragraph at lines 4461--4480
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 4123--4142
+Underfull \hbox (badness 10000) in paragraph at lines 4461--4480
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 4123--4142
+Underfull \hbox (badness 10000) in paragraph at lines 4461--4480
 
  []
 
-[51]
-Underfull \hbox (badness 10000) in paragraph at lines 4217--4220
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 4217--4220
-
- []
-
-[52]
-Underfull \hbox (badness 10000) in paragraph at lines 4269--4272
+[55]
+Underfull \hbox (badness 10000) in paragraph at lines 4555--4558
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 4285--4308
+Underfull \hbox (badness 10000) in paragraph at lines 4555--4558
+
+ []
+
+[56]
+Underfull \hbox (badness 10000) in paragraph at lines 4607--4610
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 4285--4308
+Underfull \hbox (badness 10000) in paragraph at lines 4623--4646
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 4285--4308
+Underfull \hbox (badness 10000) in paragraph at lines 4623--4646
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 4285--4308
+Underfull \hbox (badness 10000) in paragraph at lines 4623--4646
 
  []
 
-[53] [54]
+
+Underfull \hbox (badness 10000) in paragraph at lines 4623--4646
+
+ []
+
+[57] [58]
 Missing character: There is no ≤ in font Inconsolata/OT!
- [55] [56] [57] [58] [59] [60] [61] [62] [63] [64]
+ [59] [60] [61] [62] [63] [64] [65] [66] [67] [68]
 Missing character: There is no ① in font Inconsolata/OT!
 Missing character: There is no ② in font Inconsolata/OT!
 Missing character: There is no ③ in font Inconsolata/OT!
@@ -1494,9 +1504,9 @@ Missing character: There is no ⑦ in font Inconsolata/OT!
 Missing character: There is no ⑧ in font Inconsolata/OT!
 Missing character: There is no ⑨ in font Inconsolata/OT!
 Missing character: There is no ⑩ in font Inconsolata/OT!
- [65] [66])
+ [69] [70])
 Package atveryend Info: Empty hook `BeforeClearDocument' on input line 33.
- [67
+ [71
 
 ]
 Package atveryend Info: Empty hook `AfterLastShipout' on input line 33.
@@ -1505,19 +1515,19 @@ Package atveryend Info: Empty hook `AfterLastShipout' on input line 33.
 Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 33.
 Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 33.
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: D152A12762B5FEBC1557849847586D9C.
+(rerunfilecheck)             Checksum: 2BD98EF9D2293FEE8B2403BB2EE6E873.
 
 
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
  ) 
 Here is how much of TeX's memory you used:
- 41488 strings out of 492922
- 801991 string characters out of 6128808
- 1405660 words of memory out of 5000000
- 45041 multiletter control sequences out of 15000+600000
+ 41526 strings out of 492922
+ 802442 string characters out of 6128808
+ 1444660 words of memory out of 5000000
+ 45079 multiletter control sequences out of 15000+600000
  537755 words of font info for 77 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 69i,12n,67p,869b,1925s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 69i,12n,67p,869b,1937s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on main.pdf (67 pages).
+Output written on main.pdf (71 pages).
