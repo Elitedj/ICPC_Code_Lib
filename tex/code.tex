@@ -3467,62 +3467,44 @@ int main()
 
 \subsection{EXKMP}
 \begin{lstlisting}
-// 求t与s的所有后缀的最大前缀长度， 存于ex数组
-#include<bits/stdc++.h>
-using namespace std;
-typedef long long ll;
-typedef unsigned long long ull;
-typedef pair<int, int> P;
-const int maxn = 1e6+5;
-const int inf = 0x3f3f3f3f;
-const int mod = 1e9+7;
-const double PI = acos(-1);
-
-
+int nxt[maxn], extend[maxn];
 char s[maxn], t[maxn];
-int ne[maxn], ex[maxn];
 
-void get_ne(char *s)
+void getNext()
 {
-	int i=0, j, po, len=strlen(s);
-	ne[0] = len;
-	while(s[i]==s[i+1] && i+1<len)i++;
-	ne[1] = i;
-	po = 1;
-	for(int i=2;i<len;i++)
+	int n = strlen(t);
+	nxt[0] = n;
+	int a=0, p=0;
+	for(int i=1;i<n;i++)
 	{
-		if(ne[i-po]+i < ne[po]+po)
-			ne[i] = ne[i-po];
-		else
+		if(i>=p || i+nxt[i-a]>=p)
 		{
-			j = ne[po]+po-i;
-			if(j<0)j=0;
-			while(i+j < len && s[j] == s[j+i])j++;
-			ne[i] = j;
-			po = i;
+			if(i>=p)p=i;
+			while(p<n && t[p]==t[p-i])p++;
+			nxt[i] = p-i;
+			a=i;
 		}
+		else
+			nxt[i] = nxt[i-a];
 	}
 }
 
-void exkmp(char *s, char *t)
+void getExtend()
 {
-	int i=0, j, po, ls=strlen(s), lt=strlen(t);
-	get_ne(t);
-	while(s[i]==t[i] && i<lt && i<ls)i++;
-	ex[0] = i;
-	po = 0;
-	for(i=1;i<ls;i++)
+	int n = strlen(s), m = strlen(t);
+	int a=0, p=0;
+	getNext();
+	for(int i=0;i<n;i++)
 	{
-		if(ne[i-po]+i < ex[po]+po)
-			ex[i] = ne[i-po];
-		else
+		if(i>=p || i+nxt[i-a]>=p)
 		{
-			j = ex[po] + po -i;
-			if(j<0) j=0;
-			while(i+j<ls && j<lt && s[j+i]==t[j])j++;
-			ex[i] = j;
-			po = i;
+			if(i>=p)p=i;
+			while(p<n && p-i<m && s[p]==t[p-i])p++;
+			extend[i] = p-i;
+			a=i;
 		}
+		else
+			extend[i] = nxt[i-a];
 	}
 }
 
@@ -3530,12 +3512,13 @@ int main()
 {
 	scanf("%s", s);
 	scanf("%s", t);
-	exkmp(s, t);
-	for(int i=0;i<strlen(s);i++)
-	{
-		if(i==0)printf("%d", ex[i]);
-		else printf(" %d", ex[i]);
-	}
+	getExtend();
+	int lens = strlen(s), lent = strlen(t);
+	for(int i=0;i<lent;i++)
+		printf("%d ", nxt[i]);
+	printf("\n");
+	for(int i=0;i<lens;i++)
+		printf("%d ", extend[i]);
 	printf("\n");
 	return 0;
 }
@@ -3584,6 +3567,44 @@ int main()
 }
 \end{lstlisting}
 
+
+\subsection{字典树Trie}
+\begin{lstlisting}
+int tree[maxn][30]; //字典树，有maxn个结点，30表示字符集的大小，比如小写字母就26个
+int isend[maxn]; //表示结点i是否为某个串的结尾
+int tot; //节点数
+
+void insert(char *s)
+{
+	// 根节点为0号结点
+	int root=0, len=strlen(s);
+	for(int i=0;i<len;i++)
+	{
+		// pos是指当前字符应该为root的哪一个儿子
+		int pos = s[i]-'a';
+		// 如果不存在，则新创建
+		if(!tree[root][pos])
+			tree[root][pos] = ++tot;
+		// root往下走
+		root = tree[root][pos];
+	}
+	// 标记当前编号的结点是某个字符串的结尾
+	isend[root] = 1;
+}
+
+int find(char *s)
+{
+	int root=0, len=strlen(s);
+	for(int i=0;i<len;i++)
+	{
+		int pos = s[i]-'a';
+		root = tree[root][pos];
+		// 不存在则返回0
+		if(!root)return 0;
+	}
+	return 1;
+}
+\end{lstlisting}
 
 \section{数学}
 \subsection{欧拉函数}
@@ -5195,7 +5216,40 @@ int main()
 }
 \end{lstlisting}
 
+\subsection{除法分块}
+\begin{lstlisting}
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+#define inf 0x3f3f3f3f
+#define INF 0x3f3f3f3f3f3f3f3f
+#define IO ios::sync_with_stdio(0)
+typedef pair<int, int> P;
+const int maxn = 2e5+5;
+const ll mod = 1e9+7;
+using namespace std;
 
+
+ull cal(ull n)
+{
+	ull ans = 0;
+	for(ull l=1, r; l<=n; l=r+1)
+	{
+		r = n/(n/l);
+		ans += (n/l) * (l+r)*(r-l+1)/2;
+	}
+	return ans;
+}
+int main()
+{
+	IO;
+	ull a, b;
+	cin>>a>>b;
+	cout<<cal(b) - cal(a-1)<<"\n";
+	return 0;
+}
+\end{lstlisting}
 
 \section{STL}
 \subsection{vector}

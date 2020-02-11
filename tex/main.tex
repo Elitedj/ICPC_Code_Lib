@@ -1,4 +1,4 @@
-\documentclass[9pt,landscape]{article}
+\documentclass[9pt]{article}
 
 \input{format.tex} % formatting template
 
@@ -19,15 +19,15 @@
 \clearpage
 
 % 生成目录
-\begin{twocolumn}
+\begin{onecolumn}
 \tableofcontents
-\end{twocolumn}
+\end{onecolumn}
 
 \newpage
 \columnseprule=0.05pt
 % 插入代码
-\begin{twocolumn}
+\begin{onecolumn}
 \input{code.tex}
-\end{twocolumn}
+\end{onecolumn}
 
 \end{document}
