@@ -3606,6 +3606,96 @@ int find(char *s)
 }
 \end{lstlisting}
 
+\subsection{Manacher}
+\begin{lstlisting}
+char s[maxn];
+char t[2*maxn];
+int p[2*maxn];
+int manacher()
+{
+	int len = strlen(s);
+	// 预处理字符串
+	int l=0;
+	t[l++] = '$';
+	t[l++] = '#';
+	for(int i=0;i<len;i++)
+	{
+		t[l++] = s[i];
+		t[l++] = '#';
+	}
+	t[l] = '@';
+	int id = 0, mx = 0;
+	int maxlen = 1;
+	for(int i=0;i<l;i++)
+	{
+		// 预设p[i]的值
+		p[i] = mx>i ? min(p[2*id-i], mx-i) : 1;
+		// 朴素算法向左右拓展，因为处理后的字符串头和尾都是特殊字符，所以不会越界
+		while(t[i+p[i]] == t[i-p[i]])p[i]++;
+		// 能否更新mx
+		if(mx < p[i]+i)
+		{
+			mx = p[i]+i;
+			id = i;
+		}
+		// 更新最长回文子串的长度
+		if(maxlen < p[i]-1)
+			maxlen = p[i]-1;
+	}
+	return maxlen;
+}
+\end{lstlisting}
+
+\subsection{最小表示法}
+\begin{lstlisting}
+int getmin()
+{
+	int i=0, j=1, k=0, n=strlen(s);
+	while(i<n && j<n && k<n)
+	{
+		int t = s[(i+k)%n]-s[(j+k)%n];
+		if(!t)
+			k++;
+		else
+		{
+			if(t>0)
+				i += k+1;
+			else
+				j += k+1;
+			if(i==j)
+				j++;
+			k=0;
+		}
+	}
+	return min(i, j);
+}
+\end{lstlisting}
+
+\subsection{最大表示法}
+\begin{lstlisting}
+int getmax()
+{
+	int i=0, j=1, k=0, n=strlen(s);
+	while(i<n && j<n && k<n)
+	{
+		int t = s[(i+k)%n]-s[(j+k)%n];
+		if(!t)
+			k++;
+		else
+		{
+			if(t<0)
+				i += k+1;
+			else
+				j += k+1;
+			if(i==j)
+				j++;
+			k=0;
+		}
+	}
+	return min(i, j);
+}
+\end{lstlisting}
+
 \section{数学}
 \subsection{欧拉函数}
 定义：
