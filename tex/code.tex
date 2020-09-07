@@ -2978,6 +2978,191 @@ int main()
 }
 \end{lstlisting}
 
+\subsection{可持久化数组}
+\begin{lstlisting}
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+#define inf 0x3f3f3f3f
+#define INF 0x3f3f3f3f3f3f3f3f
+#define IO ios::sync_with_stdio(0)
+#define DEBUG(x) cout<<"--->"<<(x)<<endl;
+typedef pair<int, int> P;
+const ll mod = 1e9+7;
+const double eps = 1e-9;
+const double PI = acos(-1);
+const int maxn = 1e6+5;
+
+struct node {
+	int l, r, val;
+}tree[maxn * 40];
+
+int root[maxn], a[maxn];
+int cnt;
+
+void build(int l, int r, int &now) {
+	now = ++cnt;
+	if (l == r) {
+		tree[now].val = a[l];
+		return;
+	}
+	int mid = (l + r) >> 1;
+	build(l, mid, tree[now].l);
+	build(mid+1, r, tree[now].r);
+}
+
+void modify(int l, int r, int pre, int &now, int pos, int val) {
+	now = ++cnt;
+	tree[now] = tree[pre];
+	if (l == r) {
+		tree[now].val = val;
+		return ;
+	}
+	int mid = (l + r) >> 1;
+	if (pos <= mid) modify(l, mid, tree[pre].l, tree[now].l, pos, val);
+	else modify(mid+1, r, tree[pre].r, tree[now].r, pos, val);
+}
+
+int query(int l, int r, int now, int pos) {
+	if (l == r) return tree[now].val;
+	int mid = (l + r) >> 1;
+	if (pos <= mid) return query(l, mid, tree[now].l, pos);
+	else return query(mid+1, r, tree[now].r, pos);
+}
+
+int main() {
+	int n, m;
+	scanf("%d%d", &n, &m);
+	for (int i=1; i<=n; i++) scanf("%d", &a[i]);
+	build(1, n, root[0]);
+	for (int i=1; i<=m; i++) {
+		int ver, opt;
+		scanf("%d%d", &ver, &opt);
+		if (opt == 1) {
+			int pos, val;
+			scanf("%d%d", &pos, &val);
+			modify(1, n, root[ver], root[i], pos, val);
+		} else {
+			int pos;
+			scanf("%d", &pos);
+			printf("%d\n", query(1, n, root[ver], pos));
+			root[i] = root[ver];
+		}
+	}
+	return 0;
+}
+\end{lstlisting}
+
+\subsection{可持久化并查集}
+\begin{lstlisting}
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+#define inf 0x3f3f3f3f
+#define INF 0x3f3f3f3f3f3f3f3f
+#define IO ios::sync_with_stdio(0)
+#define DEBUG(x) cout<<"--->"<<(x)<<endl;
+typedef pair<int, int> P;
+const ll mod = 1e9+7;
+const double eps = 1e-9;
+const double PI = acos(-1);
+const int maxn = 2e5+5;
+
+struct node {
+	int l, r, val;
+}tree[maxn * 40 * 2];
+
+int rootfa[maxn], rootdep[maxn];
+int cnt, tot;
+int n, m;
+
+void build(int l, int r, int &now) {
+	now = ++cnt;
+	if (l == r) {
+		tree[now].val = ++tot;
+		return;
+	}
+	int mid = (l + r) >> 1;
+	build(l, mid, tree[now].l);
+	build(mid+1, r, tree[now].r);
+}
+
+void modify(int l, int r, int pre, int &now, int pos, int val) {
+	now = ++cnt;
+	tree[now] = tree[pre];
+	if (l == r) {
+		tree[now].val = val;
+		return;
+	}
+	int mid = (l + r) >> 1;
+	if (pos <= mid) modify(l, mid, tree[pre].l, tree[now].l, pos, val);
+	else modify(mid+1, r, tree[pre].r, tree[now].r, pos, val);
+}
+
+int query(int l, int r, int now, int pos) {
+	if (l == r) return tree[now].val;
+	int mid = (l + r) >> 1;
+	if (pos <= mid) return query(l, mid, tree[now].l, pos);
+	else return query(mid+1, r, tree[now].r, pos);
+}
+
+int find(int ver, int x) {
+	int fx = query(1, n, rootfa[ver], x);
+	return fx == x ? x : find(ver, fx);
+}
+
+void merge(int ver, int x, int y) {
+	x = find(ver-1, x);	// 新版本还未操作，要从上一个版本找
+	y = find(ver-1, y);
+	if (x == y) {
+		rootfa[ver] = rootfa[ver-1];
+		rootdep[ver] = rootdep[ver-1];
+	} else {
+		int depx = query(1, n, rootdep[ver-1], x);
+		int depy = query(1, n, rootdep[ver-1], y);
+		if (depx < depy) {
+			modify(1, n, rootfa[ver-1], rootfa[ver], x, y);
+			rootdep[ver] = rootdep[ver-1];
+		} else if(depx > depy) {
+			modify(1, n, rootfa[ver-1], rootfa[ver], y, x);
+			rootdep[ver] = rootdep[ver-1];
+		} else {
+			modify(1, n, rootfa[ver-1], rootfa[ver], x, y);
+			modify(1, n, rootdep[ver-1], rootdep[ver], y, depy+1);
+		}
+	}
+}
+
+int main() {
+	scanf("%d%d", &n, &m);
+	build(1, n, rootfa[0]);
+	for (int i=1; i<=m; i++) {
+		int opt;
+		scanf("%d", &opt);
+		if (opt == 1) {
+			int a, b;
+			scanf("%d%d", &a, &b);
+			merge(i, a, b);
+		} else if(opt == 2) {
+			int k;
+			scanf("%d", &k);
+			rootfa[i] = rootfa[k];
+			rootdep[i] = rootdep[k];
+		} else {
+			int a, b;
+			scanf("%d%d", &a, &b);
+			rootfa[i] = rootfa[i-1];
+			rootdep[i] = rootdep[i-1];
+			int fa = find(i, a);
+			int fb = find(i, b);
+			printf("%d\n", (fa == fb ? 1 : 0));
+		}
+	}
+	return 0;
+}
+\end{lstlisting}
 
 
 \section{DP}
