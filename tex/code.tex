@@ -2781,6 +2781,190 @@ int upper(int x)
 }
 \end{lstlisting}
 
+\subsection{替罪羊树}
+\begin{lstlisting}
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+#define inf 0x3f3f3f3f
+#define INF 0x3f3f3f3f3f3f3f3f
+#define IO ios::sync_with_stdio(0)
+#define DEBUG(x) cout<<"--->"<<(x)<<endl;
+typedef pair<int, int> P;
+const ll mod = 1e9+7;
+const double eps = 1e-9;
+const double PI = acos(-1);
+const int maxn = 2e5+5;
+
+
+struct node {
+	int l, r, val;
+	int size, fact;
+	int exist;
+}tree[maxn];
+
+int cnt, root;
+const double alpha = 0.75;	// 平衡因子
+vector<int> v;	// 记录中序遍历的结果
+
+// 新建结点
+void newnode(int &now, int val) {
+	now = ++cnt;
+	tree[now].val = val;
+	tree[now].size = tree[now].fact = 1;
+	tree[now].exist = 1;
+}
+
+// 判断是否不平衡
+bool imbalence(int now) {
+	if (max(tree[tree[now].l].size, tree[tree[now].r].size) > tree[now].size * alpha
+			|| tree[now].size - tree[now].fact > tree[now].size * 0.3)
+		return true;
+	return false;
+}
+
+// 对now为根的子树做中序遍历
+void inorder(int now) {
+	if (!now) return;
+	inorder(tree[now].l);
+	if (tree[now].exist) v.push_back(now);
+	inorder(tree[now].r);
+}
+
+// 对中序遍历的结果重构
+void lift(int l, int r, int &now) {
+	if (l == r) {
+		now = v[l];
+		tree[now].l = tree[now].r = 0;
+		tree[now].size = tree[now].fact = 1;
+		return;
+	}
+	int mid = (l + r) >> 1;
+	while (l < mid && tree[v[mid]].val == tree[v[mid-1]].val) mid--;
+	now = v[mid];
+	if (l < mid) lift(l, mid-1, tree[now].l);
+	else tree[now].l = 0;
+	lift(mid+1, r, tree[now].r);
+	tree[now].size = tree[tree[now].l].size + tree[tree[now].r].size + 1;
+	tree[now].fact = tree[tree[now].l].fact + tree[tree[now].r].fact + 1; 
+}
+
+// 对以now为根的子树重构
+void rebuild(int &now) {
+	v.clear();
+	inorder(now);
+	if (v.empty()) {
+		now = 0;
+		return;
+	}
+	lift(0, v.size()-1, now);
+}
+
+// 重构完后更新根到now链路上结点的信息
+void update(int now, int end) {
+	if (!now) return;
+	if (tree[end].val < tree[now].val) update(tree[now].l, end);
+	else update(tree[now].r, end);
+	tree[now].size = tree[tree[now].l].size + tree[tree[now].r].size + 1;
+}
+
+// 检查是否需要重构
+void check(int &now, int end) {
+	if (now == end) return;
+	if (imbalence(now)) {
+		rebuild(now);
+		update(root, now);
+		return;
+	}
+	if (tree[end].val < tree[now].val) check(tree[now].l, end);
+	else check(tree[now].r, end);
+}
+
+// 插入
+void insert(int &now, int val) {
+	if (!now) {
+		newnode(now, val);
+		check(root, now);
+		return;
+	}
+	tree[now].size++;
+	tree[now].fact++;
+	if (val < tree[now].val) insert(tree[now].l, val);
+	else insert(tree[now].r, val);
+}
+
+// 删除
+void del(int now, int val) {
+	if (tree[now].exist && tree[now].val == val) {
+		tree[now].exist = 0;
+		tree[now].fact--;
+		check(root, now);
+		return;
+	}
+	tree[now].fact--;
+	if (val < tree[now].val) del(tree[now].l, val);
+	else del(tree[now].r, val);
+}
+
+// 根据值获得排名，即比当前数小的个数+1
+int getrank(int val) {
+	int now = root, rank = 1;
+	while(now) {
+		if (val <= tree[now].val)
+			now = tree[now].l;
+		else {
+			rank += tree[now].exist + tree[tree[now].l].fact;
+			now = tree[now].r;
+		}
+	}
+	return rank;
+}
+
+// 根据排名获得值
+int getnum(int rank) {
+	int now = root;
+	while (now) {
+		if (tree[now].exist && tree[tree[now].l].fact + tree[now].exist == rank)
+			break;
+		else if(tree[tree[now].l].fact >= rank)
+			now = tree[now].l;
+		else {
+			rank -= tree[tree[now].l].fact + tree[now].exist;
+			now = tree[now].r;
+		}
+	}
+	return tree[now].val;
+}
+
+// 找x的前驱，即小于x且最大的数
+int getpre(int x) {
+	return getnum(getrank(x) - 1);
+}
+
+// 找x的后继，即大于x且最小的数
+int getnext(int x) {
+	return getnum(getrank(x + 1));
+}
+
+int main() {
+	int t;
+	scanf("%d", &t);
+	while (t--) {
+		int opt, x;
+		scanf("%d%d", &opt, &x);
+		if (opt == 1) insert(root, x);
+		else if(opt == 2) del(root, x);
+		else if(opt == 3) printf("%d\n", getrank(x));
+		else if(opt == 4) printf("%d\n", getnum(x));
+		else if(opt == 5) printf("%d\n", getpre(x));
+		else printf("%d\n", getnext(x));
+	}
+	return 0;
+}
+\end{lstlisting}
+
+
 \subsection{树链剖分}
 \begin{lstlisting}
 #include<bits/stdc++.h>
