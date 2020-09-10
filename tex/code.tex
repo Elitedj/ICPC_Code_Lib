@@ -3348,6 +3348,178 @@ int main() {
 }
 \end{lstlisting}
 
+\subsection{莫队}
+\subsubsection{普通莫队}
+\begin{lstlisting}
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+#define inf 0x3f3f3f3f
+#define INF 0x3f3f3f3f3f3f3f3f
+#define IO ios::sync_with_stdio(0)
+#define DEBUG(x) cout<<"--->"<<(x)<<endl;
+typedef pair<int, int> P;
+const ll mod = 1e9+7;
+const double eps = 1e-9;
+const double PI = acos(-1);
+const int maxn = 2e5+5;
+
+
+struct Q {
+	int l, r, k;
+}q[maxn];
+
+int a[maxn], pos[maxn], cnt[maxn];
+ll ans[maxn];
+ll res;
+
+bool cmp(Q x, Q y) {
+	return pos[x.l] == pos[y.l] ? x.r < y.r : pos[x.l] < pos[y.l];
+}
+
+void add(int x) {
+	cnt[a[x]]++;
+	res += 1ll * cnt[a[x]] * cnt[a[x]] - 1ll * (cnt[a[x]] - 1) * (cnt[a[x]] - 1);
+}
+
+void sub(int x) {
+	cnt[a[x]]--;
+	res -= 1ll * (cnt[a[x]] + 1) * (cnt[a[x]] + 1) - 1ll * cnt[a[x]] * cnt[a[x]];
+}
+
+int main() {
+	int n, m, k;
+	cin >> n >> m >> k;
+	int size = sqrt(n);
+	for (int i=1; i<=n; i++) {
+		cin >> a[i];
+		pos[i] = i / size;
+	}
+	for (int i=0; i<m; i++) {
+		cin >> q[i].l >> q[i].r;
+		q[i].k = i;
+	}
+	sort(q, q+m, cmp);
+	int l = 1, r = 0;
+	for (int i=0 ;i<m; i++) {
+		while (q[i].l < l) add(--l);
+		while (q[i].r > r) add(++r);
+		while (q[i].l > l) sub(l++);
+		while (q[i].r < r) sub(r--);
+		ans[q[i].k] = res;
+	}
+	for (int i=0; i<m; i++) cout << ans[i] << '\n';
+	return 0;
+}
+\end{lstlisting}
+
+\subsubsection{带修莫队}
+\begin{lstlisting}
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+#define inf 0x3f3f3f3f
+#define INF 0x3f3f3f3f3f3f3f3f
+#define IO ios::sync_with_stdio(0)
+#define DEBUG(x) cout<<"--->"<<(x)<<endl;
+typedef pair<int, int> P;
+const ll mod = 1e9+7;
+const double eps = 1e-9;
+const double PI = acos(-1);
+const int maxn = 1e6+5;
+
+// 查询
+struct Q {
+	int l, r, k, t;
+}q[maxn];
+// 修改
+struct M {
+	int p, col;
+}c[maxn];
+int a[maxn], cnt[maxn], ans[maxn], pos[maxn];
+int cntq, cntc, n, m, size;
+
+bool cmp(Q a, Q b) {
+	return (pos[a.l] ^ pos[b.l]) ? pos[a.l] < pos[b.l] : ((pos[a.r] ^ pos[b.r]) ? pos[a.r] < pos[b.r] : a.t < b.t);
+}
+
+int main() {
+	scanf("%d", &n);
+	scanf("%d", &m);
+	// 块大小与普通莫队不同
+	size = pow(n, 2.0 / 3.0);
+	for (int i=1; i<=n; i++) {
+		pos[i] = i / size;
+	scanf("%d", &a[i]);
+	}
+	for (int i=1; i<=m; i++) {
+		char opt[100];
+		scanf("%s", opt);
+		if (opt[0] == 'Q') {
+			++cntq;
+			scanf("%d%d", &q[cntq].l, &q[cntq].r);
+			q[cntq].k = cntq;
+			q[cntq].t = cntc;	// 查询询问的时间戳
+		} else {
+			++cntc;
+			scanf("%d%d", &c[cntc].p, &c[cntc].col);
+		}
+	}
+	sort(q + 1, q + cntq + 1, cmp);
+	int l = 1, r = 0, time = 0, res = 0;
+	for (int i=1; i<=cntq; i++) {
+		int ql = q[i].l, qr = q[i].r, qt = q[i].t;
+		while (ql < l) {
+			l--;
+			cnt[a[l]]++;
+			res += cnt[a[l]] == 1;
+		}
+		while (ql > l) {
+			cnt[a[l]]--;
+			res -= cnt[a[l]] == 0;
+			l++;
+		}
+		while (qr < r) {
+			cnt[a[r]]--;
+			res -= cnt[a[r]] == 0;
+			r--;
+		}
+		while (qr > r) {
+			r++;
+			cnt[a[r]]++;
+			res += cnt[a[r]] == 1;
+		}
+		// 下面两个是针对修改的移动
+		while (time < qt) {
+			++time;
+			if (ql <= c[time].p && c[time].p <= qr) {
+				cnt[a[c[time].p]]--;
+				cnt[c[time].col]++;
+				res -= cnt[a[c[time].p]] == 0;
+				res += cnt[c[time].col] == 1;
+			}
+			swap(a[c[time].p], c[time].col);
+		}
+		while (time > qt) {
+			if (ql <= c[time].p && c[time].p <= qr) {
+				cnt[a[c[time].p]]--;
+				cnt[c[time].col]++;
+				res -= cnt[a[c[time].p]] == 0;
+				res += cnt[c[time].col] == 1;
+			}
+			swap(a[c[time].p], c[time].col);
+			--time;
+		}
+		ans[q[i].k] = res;
+	}
+	for (int i=1; i<=cntq; i++)
+		printf("%d\n", ans[i]);
+	return 0;
+}
+\end{lstlisting}
+
 
 \section{DP}
 \subsection{背包}
