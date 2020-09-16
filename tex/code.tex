@@ -2637,149 +2637,531 @@ int main()
 
 \subsection{Splay}
 \begin{lstlisting}
-#define ls(x) T[x].ch[0]
-#define rs(x) T[x].ch[1]
-#define fa(x) T[x].fa
-#define root T[0].ch[1]
+#include<bits/stdc++.h>
 using namespace std;
-const int MAXN=1e5+10,mod=10007,INF=1e9+10;
+typedef long long ll;
+typedef unsigned long long ull;
+#define inf 0x3f3f3f3f
+#define INF 0x3f3f3f3f3f3f3f3f
+#define IO ios::sync_with_stdio(0)
+#define DEBUG(x) cout<<"--->"<<(x)<<endl;
+typedef pair<int, int> P;
+const ll mod = 1e9+7;
+const double eps = 1e-9;
+const double PI = acos(-1);
+const int maxn = 1e5+5;
 
-// fa:父节点 ch[0]:左孩子 ch[1]:右孩子 val:当前结点值 rec:当前值的个数 
-// sum:以当前结点为根的子树的结点数
-struct node
-{
-	int fa,ch[2],val,rec,sum;
-}T[MAXN];
-int tot=0,pointnum=0;
-void update(int x){T[x].sum=T[ls(x)].sum+T[rs(x)].sum+T[x].rec;}
-int ident(int x){return T[fa(x)].ch[0]==x?0:1;}
-void connect(int x,int fa,int how){T[fa].ch[how]=x;T[x].fa=fa;}
-void rotate(int x)
-{
-	int Y=fa(x),R=fa(Y);
-	int Yson=ident(x),Rson=ident(Y);
-	connect(T[x].ch[Yson^1],Y,Yson);
-	connect(Y,x,Yson^1);
-	connect(x,R,Rson);
-	update(Y);update(x);
+
+struct node {
+	int ch[2];
+	int fa, val, cnt, size;
+}tree[maxn];
+
+int tot, root;
+
+void update(int x) {
+	tree[x].size = tree[tree[x].ch[0]].size + tree[tree[x].ch[1]].size + tree[x].cnt;
 }
-void splay(int x,int to)
-{
-	to=fa(to);
-	while(fa(x)!=to)
-	{
-		int y=fa(x);
-		if(T[y].fa==to) rotate(x);
-		else if(ident(x)==ident(y)) rotate(y),rotate(x);
-		else rotate(x),rotate(x);
+
+int ident(int x, int f) {
+	return tree[f].ch[1] == x;
+}
+
+void connect(int x, int f, int s) {
+	tree[f].ch[s] = x;
+	tree[x].fa = f;
+}
+
+void rotate(int x) {
+	int f = tree[x].fa, ff = tree[f].fa, k = ident(x, f);
+	connect(tree[x].ch[k^1], f, k);
+	connect(x, ff, ident(f, ff));
+	connect(f, x, k^1);
+	update(f), update(x);
+}
+
+void splaying(int x, int top) {
+	if (!top) root = x;
+	while (tree[x].fa != top) {
+		int f = tree[x].fa, ff = tree[f].fa;
+		if (ff != top) (ident(f, ff) ^ ident(x, f)) ? rotate(x) : rotate(f);
+		rotate(x);
 	}
 }
-int newnode(int v,int f)
-{
-	T[++tot].fa=f;
-	T[tot].rec=T[tot].sum=1;
-	T[tot].val=v;
-	return tot;
+
+void newnode(int &now, int fa, int val) {
+	tree[now = ++tot].val = val;
+	tree[now].fa = fa;
+	tree[now].size = tree[now].cnt = 1;
 }
-void Insert(int x)
-{
-	int now=root;
-	if(root==0) {newnode(x,0);root=tot;}
-	else
-	{
-		while(1)
-		{
-			T[now].sum++;
-			if(T[now].val==x) {T[now].rec++;splay(now,root);return ;}
-			int nxt=x<T[now].val?0:1;
-			if(!T[now].ch[nxt])
-			{
-				int p=newnode(x,now);
-				T[now].ch[nxt]=p;
-				splay(p,root);return ;
-			}
-			now=T[now].ch[nxt];
-		}       
+
+void delnode(int x) {
+	splaying(x, 0);
+	if (tree[x].cnt > 1) tree[x].cnt--;
+	else if (tree[x].ch[1]) {
+		int p = tree[x].ch[1];
+		while (tree[p].ch[0]) p = tree[p].ch[0];
+		splaying(p, x);
+		connect(tree[x].ch[0], p, 0);
+		root = p;
+		tree[p].fa = 0;
+		update(root);
+	} else {
+		root = tree[x].ch[0], tree[root].fa = 0;
 	}
 }
-int find(int x)
-{
-	int now=root;
-	while(1)
-	{
-		if(!now) return 0;
-		if(T[now].val==x) {splay(now,root);return now;}
-		int nxt=x<T[now].val?0:1;
-		now=T[now].ch[nxt];
-	}
+
+void insert(int val, int &now = root, int fa = 0) {
+	if (!now) newnode(now, fa, val), splaying(now, 0);
+	else if (val < tree[now].val) insert(val, tree[now].ch[0], now);
+	else if (val > tree[now].val) insert(val, tree[now].ch[1], now);
+	else tree[now].cnt++, splaying(now, 0);
 }
-void delet(int x)
-{
-	int pos=find(x);
-	if(!pos) return ;
-	if(T[pos].rec>1) {T[pos].rec--,T[pos].sum--;return ;} 
-	else
-	{
-		if(!T[pos].ch[0]&&!T[pos].ch[1]) {root=0;return ;}
-		else if(!T[pos].ch[0]) {root=T[pos].ch[1];T[root].fa=0;return ;}
-		else
-		{
-			int left=T[pos].ch[0];
-			while(T[left].ch[1]) left=T[left].ch[1];
-			splay(left,T[pos].ch[0]);
-			connect(T[pos].ch[1],left,1); 
-			connect(left,0,1);//
-			update(left);
+
+void del(int val, int now = root) {
+	if (val == tree[now].val) delnode(now);
+	else if (val < tree[now].val) del(val, tree[now].ch[0]);
+	else del(val, tree[now].ch[1]);
+}
+
+int getrank(int val) {
+	int now = root, rank = 1;
+	while (now) {
+		if (tree[now].val == val) {
+			rank += tree[tree[now].ch[0]].size;
+			splaying(now, 0);
+			break;
+		}
+		if (val <= tree[now].val)
+			now = tree[now].ch[0];
+		else {
+			rank += tree[tree[now].ch[0]].size + tree[now].cnt;
+			now = tree[now].ch[1];
 		}
 	}
+	return rank;
 }
-// x的排名
-int rak(int x)
-{
-	int now=root,ans=0;
-	while(1)
-	{
-		if(T[now].val==x) return ans+T[T[now].ch[0]].sum+1;
-		int nxt=x<T[now].val?0:1;
-		if(nxt==1) ans=ans+T[T[now].ch[0]].sum+T[now].rec;
-		now=T[now].ch[nxt];
+
+int getnum(int rank) {
+	int now = root;
+	while (now) {
+		int lsize = tree[tree[now].ch[0]].size;
+		if (lsize+1 <= rank && rank <= lsize + tree[now].cnt) {
+			splaying(now, 0);
+			break;
+		} else if (lsize >= rank)
+			now = tree[now].ch[0];
+		else {
+			rank -= lsize + tree[now].cnt;
+			now = tree[now].ch[1];
+		}
 	}
+	return tree[now].val;
 }
-// 排名x的数
-int kth(int x)
-{
-	int now=root;
-	while(1)
-	{
-		int used=T[now].sum-T[T[now].ch[1]].sum;
-		if(T[T[now].ch[0]].sum<x&&x<=used) {splay(now,root);return T[now].val;}
-		if(x<used) now=T[now].ch[0];
-		else now=T[now].ch[1],x-=used;
-	}
+
+int getpre(int x) {
+	return getnum(getrank(x) - 1);
 }
-int lower(int x)
-{
-	int now=root,ans=-INF;
-	while(now)
-	{
-		if(T[now].val<x) ans=max(ans,T[now].val);
-		int nxt=x<=T[now].val?0:1;//这里需要特别注意 
-		now=T[now].ch[nxt];
-	}
-	return ans;
+
+int getnxt(int x) {
+	return getnum(getrank(x + 1));
 }
-int upper(int x)
-{
-	int now=root,ans=INF;
-	while(now)
-	{
-		if(T[now].val>x) ans=min(ans,T[now].val);
-		int nxt=x<T[now].val?0:1;
-		now=T[now].ch[nxt];
+
+int main() {
+	int t;
+	scanf("%d", &t);
+	while (t--) {
+		int opt, x;
+		scanf("%d%d", &opt, &x);
+		if (opt == 1) insert(x);
+		else if (opt == 2) del(x);
+		else if (opt == 3) printf("%d\n", getrank(x));
+		else if (opt == 4) printf("%d\n", getnum(x));
+		else if (opt == 5) printf("%d\n", getpre(x));
+		else printf("%d\n", getnxt(x));
 	}
-	return ans;
+	return 0;
 }
 \end{lstlisting}
+
+\subsection{Treap}
+\subsubsection{普通Treap}
+\begin{lstlisting}
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+#define inf 0x3f3f3f3f
+#define INF 0x3f3f3f3f3f3f3f3f
+#define IO ios::sync_with_stdio(0)
+#define DEBUG(x) cout<<"--->"<<(x)<<endl;
+typedef pair<int, int> P;
+const ll mod = 1e9+7;
+const double eps = 1e-9;
+const double PI = acos(-1);
+const int maxn = 2e5+5;
+
+
+struct node {
+	int son[2];
+	int val, key;
+	int cnt, size;
+} tree[maxn];
+
+int tot, root;
+
+mt19937 rnd(233);
+
+void pushup(int p) {
+	tree[p].size = tree[tree[p].son[0]].size + tree[tree[p].son[1]].size + tree[p].cnt;
+}
+
+void rotate(int &p, int d) {
+	int k = tree[p].son[d^1];
+	tree[p].son[d^1] = tree[k].son[d];
+	tree[k].son[d] = p;
+	pushup(p);
+	pushup(k);
+	p = k;
+}
+
+void insert(int &p, int x) {
+	if (!p) {
+		p = ++tot;
+		tree[p].size = tree[p].cnt = 1;
+		tree[p].val = x;
+		tree[p].key = rnd();
+		return;
+	}
+	if (tree[p].val == x) {
+		tree[p].size++;
+		tree[p].cnt++;
+		return;
+	}
+	int d = (x > tree[p].val);
+	insert(tree[p].son[d], x);
+	if (tree[p].key < tree[tree[p].son[d]].key) rotate(p, d^1);
+	pushup(p);
+}
+
+void del(int &p, int x) {
+	if (!p) return;
+	if (x < tree[p].val) del(tree[p].son[0], x);
+	else if (x > tree[p].val) del(tree[p].son[1], x);
+	else {
+		if (!tree[p].son[0] && !tree[p].son[1]) {
+			tree[p].cnt--;
+			tree[p].size--;
+			if (tree[p].cnt == 0) p = 0;
+		} else if (tree[p].son[0] && !tree[p].son[1]) {
+			rotate(p, 1);
+			del(tree[p].son[1], x);
+		} else if (!tree[p].son[0] && tree[p].son[1]) {
+			rotate(p, 0);
+			del(tree[p].son[0], x);
+		} else {
+			int d = (tree[tree[p].son[0]].key > tree[tree[p].son[1]].key);
+			rotate(p, d);
+			del(tree[p].son[d], x);
+		}
+	}
+	pushup(p);
+}
+
+int getrank(int p, int x) {
+	if (!p) return 0;
+	if (tree[p].val == x) return tree[tree[p].son[0]].size + 1;
+	else if (tree[p].val < x)
+		return tree[tree[p].son[0]].size + tree[p].cnt + getrank(tree[p].son[1], x);
+	else return getrank(tree[p].son[0], x);
+}
+
+int getnum(int p, int x) {
+	if (!p) return 0;
+	if (tree[tree[p].son[0]].size >= x) return getnum(tree[p].son[0], x);
+	else if (tree[tree[p].son[0]].size + tree[p].cnt < x)
+		return getnum(tree[p].son[1], x - tree[tree[p].son[0]].size - tree[p].cnt);
+	else return tree[p].val;
+}
+
+int getpre(int p, int x) {
+	if (!p) return -inf;
+	if (tree[p].val >= x) return getpre(tree[p].son[0], x);
+	else return max(tree[p].val, getpre(tree[p].son[1], x));
+}
+
+int getnxt(int p, int x) {
+	if (!p) return inf;
+	if (tree[p].val <= x) return getnxt(tree[p].son[1], x);
+	else return min(tree[p].val, getnxt(tree[p].son[0], x));
+}
+
+int main() {
+	int n;
+	scanf("%d", &n);
+	for (int i=1; i<=n; i++) {
+		int opt, x;
+		scanf("%d%d", &opt, &x);
+		if (opt == 1) insert(root, x);
+		else if (opt == 2) del(root, x);
+		else if (opt == 3) printf("%d\n", getrank(root, x));
+		else if (opt == 4) printf("%d\n", getnum(root, x));
+		else if (opt == 5) printf("%d\n", getpre(root, x));
+		else printf("%d\n", getnxt(root, x));
+	}
+	return 0;
+}
+\end{lstlisting}
+
+\subsubsection{无旋Treap}
+\begin{lstlisting}
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+#define inf 0x3f3f3f3f
+#define INF 0x3f3f3f3f3f3f3f3f
+#define IO ios::sync_with_stdio(0)
+#define DEBUG(x) cout<<"--->"<<(x)<<endl;
+typedef pair<int, int> P;
+const ll mod = 1e9+7;
+const double eps = 1e-9;
+const double PI = acos(-1);
+const int maxn = 2e5+5;
+
+
+struct node {
+	int l, r;
+	int val, key;
+	int size;
+}tree[maxn];
+
+int root, cnt;
+mt19937 rnd(233);
+
+int x, y, z;
+
+int newnode(int val) {
+	++cnt;
+	tree[cnt].val = val;
+	tree[cnt].size = 1;
+	tree[cnt].key = rnd();
+	return cnt;
+}
+
+void update(int now) {
+	tree[now].size = tree[tree[now].l].size + tree[tree[now].r].size + 1;
+}
+
+void split(int now, int val, int &x, int &y) {
+	if (!now) x = y = 0;
+	else {
+		if (tree[now].val <= val) {
+			x = now;
+			split(tree[now].r, val, tree[now].r, y);
+		} else {
+			y = now;
+			split(tree[now].l, val, x, tree[now].l);
+		}
+		update(now);
+	}
+}
+
+int merge(int x, int y) {
+	if (!x || !y) return x + y;
+	if (tree[x].key > tree[y].key) {
+		tree[x].r = merge(tree[x].r, y);
+		update(x);
+		return x;
+	} else {
+		tree[y].l = merge(x, tree[y].l);
+		update(y);
+		return y;
+	}
+}
+
+void insert(int val) {
+	split(root, val, x, y);
+	root = merge(merge(x, newnode(val)), y);
+}
+
+void del(int val) {
+	split(root, val, x, z);
+	split(x, val-1, x, y);
+	y = merge(tree[y].l, tree[y].r);
+	root = merge(merge(x, y), z);
+}
+
+int getrank(int val) {
+	int res;
+	split(root, val-1, x, y);
+	res = tree[x].size + 1;
+	root = merge(x, y);
+	return res;
+}
+
+int getnum(int rank) {
+	int now = root;
+	while (now) {
+		if (tree[tree[now].l].size + 1 == rank)
+			break;
+		else if (tree[tree[now].l].size >= rank)
+			now = tree[now].l;
+		else {
+			rank -= tree[tree[now].l].size + 1;
+			now = tree[now].r;
+		}
+	}
+	return tree[now].val;
+}
+
+int getpre(int val) {
+	split(root, val-1, x, y);
+	int now = x;
+	while (tree[now].r)
+		now = tree[now].r;
+	int res = tree[now].val;
+	root = merge(x, y);
+	return res;
+}
+
+int getnxt(int val) {
+	split(root, val, x, y);
+	int now = y;
+	while (tree[now].l)
+		now = tree[now].l;
+	int res = tree[now].val;
+	root = merge(x, y);
+	return res;
+}
+
+int main() {
+	int t;
+	scanf("%d", &t);
+	while (t--) {
+		int opt, x;
+		scanf("%d%d", &opt, &x);
+		if (opt == 1) insert(x);
+		else if (opt == 2) del(x);
+		else if (opt == 3) printf("%d\n", getrank(x));
+		else if (opt == 4) printf("%d\n", getnum(x));
+		else if (opt == 5) printf("%d\n", getpre(x));
+		else printf("%d\n", getnxt(x));
+	}
+	return 0;
+}
+\end{lstlisting}
+
+\subsubsection{无旋Treap维护区间}
+\begin{lstlisting}
+#include<bits/stdc++.h>
+using namespace std;
+typedef long long ll;
+typedef unsigned long long ull;
+#define inf 0x3f3f3f3f
+#define INF 0x3f3f3f3f3f3f3f3f
+#define IO ios::sync_with_stdio(0)
+#define DEBUG(x) cout<<"--->"<<(x)<<endl;
+typedef pair<int, int> P;
+const ll mod = 1e9+7;
+const double eps = 1e-9;
+const double PI = acos(-1);
+const int maxn = 1e5+5;
+
+struct node {
+	int l, r;
+	int val, key;
+	int size;
+	int reverse;
+}tree[maxn];
+
+int cnt, root;
+mt19937 rnd(233);
+int x, y, z;
+
+int newnode(int val) {
+	++cnt;
+	tree[cnt].val = val;
+	tree[cnt].size = 1;
+	tree[cnt].key = rnd();
+	return cnt;
+}
+
+void update(int now) {
+	tree[now].size = tree[tree[now].l].size + tree[tree[now].r].size + 1;
+}
+
+void pushdown(int now) {
+	swap(tree[now].l, tree[now].r);
+	tree[tree[now].l].reverse ^= 1;
+	tree[tree[now].r].reverse ^= 1;
+	tree[now].reverse = 0;
+}
+
+void split(int now, int sz, int &x, int &y) {
+	if (!now) x = y = 0;
+	else {
+		if (tree[now].reverse) pushdown(now);
+		if (tree[tree[now].l].size < sz) {
+			x = now;
+			split(tree[now].r, sz - tree[tree[now].l].size - 1, tree[now].r, y);
+		} else {
+			y = now;
+			split(tree[now].l, sz, x, tree[now].l);
+		}
+		update(now);
+	}
+}
+
+int merge(int x, int y) {
+	if (!x || !y) return x + y;
+	if (tree[x].key < tree[y].key) {
+		if (tree[x].reverse) pushdown(x);
+		tree[x].r = merge(tree[x].r, y);
+		update(x);
+		return x;
+	} else {
+		if (tree[y].reverse) pushdown(y);
+		tree[y].l = merge(x, tree[y].l);
+		update(y);
+		return y;
+	}
+}
+
+void reverse(int l, int r) {
+	int x, y, z;
+	split(root, l-1, x, y);
+	split(y, r-l+1, y, z);
+	tree[y].reverse ^= 1;
+	root = merge(merge(x, y), z);
+}
+
+void print(int now) {
+	if (!now) return;
+	if (tree[now].reverse) pushdown(now);
+	print(tree[now].l);
+	printf("%d ", tree[now].val);
+	print(tree[now].r);
+}
+
+int main() {
+	int n, m;
+	scanf("%d%d", &n, &m);
+	for (int i=1; i<=n; i++)
+		root = merge(root, newnode(i));
+	while (m--) {
+		int l, r;
+		scanf("%d%d", &l, &r);
+		reverse(l, r);
+	}
+	print(root);
+	printf("\n");
+	return 0;
+}
+\end{lstlisting}
+
+
+
 
 \subsection{替罪羊树}
 \begin{lstlisting}
