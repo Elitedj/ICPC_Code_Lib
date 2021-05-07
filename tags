@@ -1,0 +1,152 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_OUTPUT_MODE	u-ctags	/u-ctags or e-ctags/
+!_TAG_PROGRAM_AUTHOR	Universal Ctags Team	//
+!_TAG_PROGRAM_NAME	Universal Ctags	/Derived from Exuberant Ctags/
+!_TAG_PROGRAM_URL	https://ctags.io/	/official site/
+!_TAG_PROGRAM_VERSION	0.0.0	/45968ef/
+51Nod 1021 石子合并	tex/code.tex	/^\\subsubsection{51Nod 1021 石子合并}$/;"	b	subsection:DP""区间DP
+BZOJ1202	tex/code.tex	/^\\subsubsection{BZOJ1202}$/;"	b	subsection:数据结构""带权并查集
+Bellman-Ford	tex/code.tex	/^\\subsubsection{Bellman-Ford}$/;"	b	subsection:图论""最短路径
+C++大数	tex/code.tex	/^\\subsection{C++大数}$/;"	u	section:其它
+DP	tex/code.tex	/^\\section{DP}$/;"	s
+Dijkstra	tex/code.tex	/^\\subsubsection{Dijkstra}$/;"	b	subsection:图论""最短路径
+Dijkstra优化	tex/code.tex	/^\\subsubsection{Dijkstra优化}$/;"	b	subsection:图论""最短路径
+Dinic	tex/code.tex	/^\\subsubsection{Dinic}$/;"	b	subsection:图论""最大流
+Dinic优化	tex/code.tex	/^\\subsubsection{Dinic优化}$/;"	b	subsection:图论""最大流
+EXGCD	tex/code.tex	/^\\subsection{EXGCD}$/;"	u	section:数学
+EXKMP	tex/code.tex	/^\\subsection{EXKMP}$/;"	u	section:字符串
+Floyd	tex/code.tex	/^\\subsubsection{Floyd}$/;"	b	subsection:图论""最短路径
+Floyd找最小环	tex/code.tex	/^\\subsection{Floyd找最小环}$/;"	u	section:图论
+GCD	tex/code.tex	/^\\subsection{GCD}$/;"	u	section:数学
+HDU 2089 不要62	tex/code.tex	/^\\subsubsection{HDU 2089 不要62}$/;"	b	subsection:DP""数位DP
+IO	tex/code.tex	/^\\subsubsection{IO}$/;"	b	subsection:其它""输入挂
+Java	tex/code.tex	/^\\subsection{Java}$/;"	u	section:其它
+KMP	tex/code.tex	/^\\subsection{KMP}$/;"	u	section:字符串
+LCA	tex/code.tex	/^\\subsection{LCA}$/;"	u	section:图论
+Manacher	tex/code.tex	/^\\subsection{Manacher}$/;"	u	section:字符串
+Miller Rabin	tex/code.tex	/^\\subsubsection{Miller Rabin}$/;"	b	subsection:数学""素数
+Prim	tex/code.tex	/^\\subsubsection{Prim}$/;"	b	subsection:图论""最小生成树
+RMQ	tex/code.tex	/^\\subsubsection{RMQ}$/;"	b	subsection:图论""LCA
+SCNU ACM-ICPC Team DeDeRong Code Lib	README.md	/^# SCNU ACM-ICPC Team DeDeRong Code Lib$/;"	c
+SCOI 2009 Windy数	tex/code.tex	/^\\subsubsection{SCOI 2009 Windy数}$/;"	b	subsection:DP""数位DP
+SPFA	tex/code.tex	/^\\subsubsection{SPFA}$/;"	b	subsection:图论""最短路径
+STL	tex/code.tex	/^\\section{STL}$/;"	s
+ST表	tex/code.tex	/^\\subsection{ST表}$/;"	u	section:数据结构
+Splay	tex/code.tex	/^\\subsection{Splay}$/;"	u	section:数据结构
+Treap	tex/code.tex	/^\\subsection{Treap}$/;"	u	section:数据结构
+Vim配置	tex/code.tex	/^\\subsection{Vim配置}$/;"	u	section:其它
+algorithm	tex/code.tex	/^\\subsection{algorithm}$/;"	u	section:STL
+bitset	tex/code.tex	/^\\subsection{bitset}$/;"	u	section:STL
+kruskal	tex/code.tex	/^\\subsubsection{kruskal}$/;"	b	subsection:图论""最小生成树
+map	tex/code.tex	/^\\subsection{map}$/;"	u	section:STL
+pair	tex/code.tex	/^\\subsection{pair}$/;"	u	section:STL
+queue	tex/code.tex	/^\\subsection{queue}$/;"	u	section:STL
+set	tex/code.tex	/^\\subsection{set}$/;"	u	section:STL
+stack	tex/code.tex	/^\\subsection{stack}$/;"	u	section:STL
+vector	tex/code.tex	/^\\subsection{vector}$/;"	u	section:STL
+三角形面积	tex/code.tex	/^\\subsection{三角形面积}$/;"	u	section:计算几何
+两圆面积交	tex/code.tex	/^\\subsection{两圆面积交}$/;"	u	section:计算几何
+中国剩余定理	tex/code.tex	/^\\subsection{中国剩余定理}$/;"	u	section:数学
+主席树	tex/code.tex	/^\\subsection{主席树}$/;"	u	section:数据结构
+二分图匹配	tex/code.tex	/^\\subsection{二分图匹配}$/;"	u	section:图论
+二分答案	tex/code.tex	/^\\subsection{二分答案}$/;"	u	section:其它
+任意元素交换	tex/code.tex	/^\\subsubsection{任意元素交换}$/;"	b	subsection:数学""无序序列变有序的最少交换次数
+例题	tex/code.tex	/^\\subsubsection{例题}$/;"	b	subsection:数学""EXGCD
+例题	tex/code.tex	/^\\subsubsection{例题}$/;"	b	subsection:数学""中国剩余定理
+例题一	tex/code.tex	/^\\subsubsection{例题一}$/;"	b	subsection:数学""唯一分解定理
+例题一	tex/code.tex	/^\\subsubsection{例题一}$/;"	b	subsection:数学""广义欧拉降幂
+例题一	tex/code.tex	/^\\subsubsection{例题一}$/;"	b	subsection:数学""欧拉降幂
+例题三	tex/code.tex	/^\\subsubsection{例题三}$/;"	b	subsection:数学""广义欧拉降幂
+例题二	tex/code.tex	/^\\subsubsection{例题二}$/;"	b	subsection:数学""唯一分解定理
+例题二	tex/code.tex	/^\\subsubsection{例题二}$/;"	b	subsection:数学""广义欧拉降幂
+倍增	tex/code.tex	/^\\subsubsection{倍增}$/;"	b	subsection:图论""LCA
+全排列	tex/code.tex	/^\\subsection{全排列}$/;"	u	section:数学
+全错排	tex/code.tex	/^\\subsection{全错排}$/;"	u	section:数学
+公共因子数	tex/code.tex	/^\\subsection{公共因子数}$/;"	u	section:数学
+关闭同步	tex/code.tex	/^\\subsubsection{关闭同步}$/;"	b	subsection:其它""输入挂
+其它	tex/code.tex	/^\\section{其它}$/;"	s
+判断小于MAXN的数是否为素数	tex/code.tex	/^\\subsubsection{判断小于MAXN的数是否为素数}$/;"	b	subsection:数学""素数
+割点	tex/code.tex	/^\\subsection{割点}$/;"	u	section:图论
+动态区间第K大(主席树套树状数组) ZOJ2112	tex/code.tex	/^\\subsubsection{动态区间第K大(主席树套树状数组) ZOJ2112}$/;"	b	subsection:数据结构""主席树
+匈牙利算法	tex/code.tex	/^\\subsubsection{匈牙利算法}$/;"	b	subsection:图论""二分图匹配
+区间DP	tex/code.tex	/^\\subsection{区间DP}$/;"	u	section:DP
+区间修改+区间求和 POJ3465	tex/code.tex	/^\\subsubsection{区间修改+区间求和 POJ3465}$/;"	b	subsection:数据结构""线段树
+区间染色+统计+离散化 POJ2528	tex/code.tex	/^\\subsubsection{区间染色+统计+离散化 POJ2528}$/;"	b	subsection:数据结构""线段树
+区间第K大	tex/code.tex	/^\\subsubsection{区间第K大}$/;"	b	subsection:数据结构""主席树
+单点修改+区间最值 HDU1754	tex/code.tex	/^\\subsubsection{单点修改+区间最值 HDU1754}$/;"	b	subsection:数据结构""线段树
+单点修改+区间求和 HDU1166	tex/code.tex	/^\\subsubsection{单点修改+区间求和 HDU1166}$/;"	b	subsection:数据结构""线段树
+可持久化并查集	tex/code.tex	/^\\subsection{可持久化并查集}$/;"	u	section:数据结构
+可持久化数组	tex/code.tex	/^\\subsection{可持久化数组}$/;"	u	section:数据结构
+唯一分解定理	tex/code.tex	/^\\subsection{唯一分解定理}$/;"	u	section:数学
+图论	tex/code.tex	/^\\section{图论}$/;"	s
+埃式筛法	tex/code.tex	/^\\subsubsection{埃式筛法}$/;"	b	subsection:数学""素数
+大数乘法	tex/code.tex	/^\\subsubsection{大数乘法}$/;"	b	subsection:其它""C++大数
+大数加法	tex/code.tex	/^\\subsubsection{大数加法}$/;"	b	subsection:其它""C++大数
+头文件	tex/code.tex	/^\\subsection{头文件}$/;"	u	section:其它
+字典树Trie	tex/code.tex	/^\\subsection{字典树Trie}$/;"	u	section:字符串
+字符串	tex/code.tex	/^\\section{字符串}$/;"	s
+字符串Hash	tex/code.tex	/^\\subsection{字符串Hash}$/;"	u	section:字符串
+带修莫队	tex/code.tex	/^\\subsubsection{带修莫队}$/;"	b	subsection:数据结构""莫队
+带权并查集	tex/code.tex	/^\\subsection{带权并查集}$/;"	u	section:数据结构
+并查集	tex/code.tex	/^\\subsection{并查集}$/;"	u	section:数据结构
+广义欧拉降幂	tex/code.tex	/^\\subsection{广义欧拉降幂}$/;"	u	section:数学
+强连通分量	tex/code.tex	/^\\subsection{强连通分量}$/;"	u	section:图论
+快速幂	tex/code.tex	/^\\subsection{快速幂}$/;"	u	section:数学
+悬线法 BZOJ3039	tex/code.tex	/^\\subsection{悬线法 BZOJ3039}$/;"	u	section:图论
+拓展中国剩余定理	tex/code.tex	/^\\subsection{拓展中国剩余定理}$/;"	u	section:数学
+拓展欧几里得法	tex/code.tex	/^\\subsubsection{拓展欧几里得法}$/;"	b	subsection:数学""逆元
+拓扑排序	tex/code.tex	/^\\subsection{拓扑排序}$/;"	u	section:图论
+数位DP	tex/code.tex	/^\\subsection{数位DP}$/;"	u	section:DP
+数学	tex/code.tex	/^\\section{数学}$/;"	s
+数据类型范围	tex/code.tex	/^\\subsection{数据类型范围}$/;"	u	section:其它
+数据结构	tex/code.tex	/^\\section{数据结构}$/;"	s
+整数转string	tex/code.tex	/^\\subsubsection{整数转string}$/;"	b	subsection:其它""C++大数
+无序序列变有序的最少交换次数	tex/code.tex	/^\\subsection{无序序列变有序的最少交换次数}$/;"	u	section:数学
+无旋Treap	tex/code.tex	/^\\subsubsection{无旋Treap}$/;"	b	subsection:数据结构""Treap
+无旋Treap维护区间	tex/code.tex	/^\\subsubsection{无旋Treap维护区间}$/;"	b	subsection:数据结构""Treap
+普通Treap	tex/code.tex	/^\\subsubsection{普通Treap}$/;"	b	subsection:数据结构""Treap
+普通莫队	tex/code.tex	/^\\subsubsection{普通莫队}$/;"	b	subsection:数据结构""莫队
+替罪羊树	tex/code.tex	/^\\subsection{替罪羊树}$/;"	u	section:数据结构
+最大流	tex/code.tex	/^\\subsection{最大流}$/;"	u	section:图论
+最大表示法	tex/code.tex	/^\\subsection{最大表示法}$/;"	u	section:字符串
+最小生成树	tex/code.tex	/^\\subsection{最小生成树}$/;"	u	section:图论
+最小表示法	tex/code.tex	/^\\subsection{最小表示法}$/;"	u	section:字符串
+最短路径	tex/code.tex	/^\\subsection{最短路径}$/;"	u	section:图论
+最长公共子序列	tex/code.tex	/^\\subsection{最长公共子序列}$/;"	u	section:DP
+最长公共递增子序列	tex/code.tex	/^\\subsection{最长公共递增子序列}$/;"	u	section:DP
+最长有序子序列	tex/code.tex	/^\\subsection{最长有序子序列}$/;"	u	section:DP
+枚举约数	tex/code.tex	/^\\subsection{枚举约数}$/;"	u	section:数学
+树状数组	tex/code.tex	/^\\subsection{树状数组}$/;"	u	section:数据结构
+树链剖分	tex/code.tex	/^\\subsection{树链剖分}$/;"	u	section:数据结构
+桥	tex/code.tex	/^\\subsection{桥}$/;"	u	section:图论
+次小生成树-POJ1679	tex/code.tex	/^\\subsection{次小生成树-POJ1679}$/;"	u	section:图论
+次短路	tex/code.tex	/^\\subsection{次短路}$/;"	u	section:图论
+欧拉函数	tex/code.tex	/^\\subsection{欧拉函数}$/;"	u	section:数学
+欧拉回路	tex/code.tex	/^\\subsection{欧拉回路}$/;"	u	section:图论
+欧拉降幂	tex/code.tex	/^\\subsection{欧拉降幂}$/;"	u	section:数学
+求1e11内的素数个数	tex/code.tex	/^\\subsubsection{求1e11内的素数个数}$/;"	b	subsection:数学""素数
+求斐波那契第N项	tex/code.tex	/^\\subsection{求斐波那契第N项}$/;"	u	section:数学
+状压+线段树维护区间26字母种类 CF1234D	tex/code.tex	/^\\subsubsection{状压+线段树维护区间26字母种类 CF1234D}$/;"	b	subsection:数据结构""线段树
+生成树计数(基尔霍夫矩阵) BZOJ1002	tex/code.tex	/^\\subsection{生成树计数(基尔霍夫矩阵) BZOJ1002}$/;"	u	section:图论
+相邻元素交换	tex/code.tex	/^\\subsubsection{相邻元素交换}$/;"	b	subsection:数学""无序序列变有序的最少交换次数
+矩形相交	tex/code.tex	/^\\subsection{矩形相交}$/;"	u	section:计算几何
+素数	tex/code.tex	/^\\subsection{素数}$/;"	u	section:数学
+线性筛法	tex/code.tex	/^\\subsubsection{线性筛法}$/;"	b	subsection:数学""素数
+线段树	tex/code.tex	/^\\subsection{线段树}$/;"	u	section:数据结构
+线段树+扫描线求矩阵覆盖周长 POJ1177	tex/code.tex	/^\\subsubsection{线段树+扫描线求矩阵覆盖周长 POJ1177}$/;"	b	subsection:数据结构""线段树
+线段树+扫描线求矩阵面积并 HDU1542	tex/code.tex	/^\\subsubsection{线段树+扫描线求矩阵面积并 HDU1542}$/;"	b	subsection:数据结构""线段树
+组合数	tex/code.tex	/^\\subsection{组合数}$/;"	u	section:数学
+背包	tex/code.tex	/^\\subsection{背包}$/;"	u	section:DP
+自然溢出	tex/code.tex	/^\\subsubsection{自然溢出}$/;"	b	subsection:字符串""字符串Hash
+莫队	tex/code.tex	/^\\subsection{莫队}$/;"	u	section:数据结构
+计算几何	tex/code.tex	/^\\section{计算几何}$/;"	s
+质因子	tex/code.tex	/^\\subsection{质因子}$/;"	u	section:数学
+费马小定理法	tex/code.tex	/^\\subsubsection{费马小定理法}$/;"	b	subsection:数学""逆元
+输入挂	tex/code.tex	/^\\subsection{输入挂}$/;"	u	section:其它
+逆元	tex/code.tex	/^\\subsection{逆元}$/;"	u	section:数学
+逆序数	tex/code.tex	/^\\subsection{逆序数}$/;"	u	section:数学
+递归	tex/code.tex	/^\\subsubsection{递归}$/;"	b	subsection:数学""GCD
+阶乘长度	tex/code.tex	/^\\subsection{阶乘长度}$/;"	u	section:数学
+除法分块	tex/code.tex	/^\\subsection{除法分块}$/;"	u	section:数学
+非递归	tex/code.tex	/^\\subsubsection{非递归}$/;"	b	subsection:数学""GCD
