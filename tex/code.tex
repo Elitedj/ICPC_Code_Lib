@@ -4176,6 +4176,89 @@ int main() {
 }
 \end{lstlisting}
 
+\subsection{树上启发式合并}
+\begin{lstlisting}
+// 给出一个树，求出每个节点的子树中出现次数最多的颜色的编号和
+const int maxn = 1e5 + 5;
+
+int n, tot;
+int a[maxn], sz[maxn], hson[maxn], head[maxn], cnt[maxn];
+ll ans[maxn];
+ll sum, mx, skip;
+
+struct Edge {
+	int to, nxt;
+}edge[maxn << 1];
+
+void addedge(int u, int v) {
+	edge[++tot].to = v;
+	edge[tot].nxt = head[u];
+	head[u] = tot;
+}
+
+void dfs1(int u, int fa) {
+	sz[u] = 1;
+	for (int i = head[u]; i; i = edge[i].nxt) {
+		int v = edge[i].to;
+		if (v == fa) continue;
+		dfs1(v, u);
+		sz[u] += sz[v];
+		if (hson[u] == 0 || sz[v] > sz[hson[u]]) hson[u] = v;
+	}
+}
+
+void add(int u, int fa, int val) {
+	cnt[a[u]] += val;
+	if (cnt[a[u]] > mx) {
+		mx = cnt[a[u]];
+		sum = a[u];
+	} else if (cnt[a[u]] == mx) {
+		sum += a[u];
+	}
+	for (int i = head[u]; i; i = edge[i].nxt) {
+		int v = edge[i].to;
+		if (v == fa || v == skip) continue;
+		add(v, u, val);
+	}
+}
+
+void dfs2(int u, int fa, int keep) {
+	for (int i = head[u]; i; i = edge[i].nxt) {
+		int v = edge[i].to;
+		if (v == fa || v == hson[u]) continue;
+		dfs2(v, u, 0);
+	}
+	if (hson[u]) {
+		dfs2(hson[u], u, 1);
+		skip = hson[u];
+	}
+	add(u, fa, 1);
+	skip = 0;
+	ans[u] = sum;
+	if (!keep) {
+		add(u, fa, -1);
+		sum = 0;
+		mx = 0;
+	}
+}
+
+int main() {
+	// freopen("in.txt", "r", stdin);
+	scanf("%d", &n);
+	for (int i = 1; i <= n; i++) scanf("%d", &a[i]);
+	for (int i = 1; i < n; i++) {
+		int u, v;
+		scanf("%d%d", &u, &v);
+		addedge(u, v);
+		addedge(v, u);
+	}
+	dfs1(1, 0);
+	dfs2(1, 0, 1);
+	for (int i = 1; i <= n; i++) printf("%lld ", ans[i]);
+	printf("\n");
+	return 0;
+}
+\end{lstlisting}
 
 \section{DP}
 \subsection{背包}
@@ -4247,6 +4330,87 @@ int main()
 }
 \end{lstlisting}
 
+\subsection{树型DP}
+没有上司的舞会\\
+每个结点有权值，只有其父节点不在子集里自己才算贡献\\
+\begin{lstlisting}
+const int maxn = 6e3 + 5;
+
+vector<int> g[maxn];
+int a[maxn], vis[maxn];
+int rt;
+int dp[maxn][2];
+void fun(int u) {
+	dp[u][0] = 0;
+	dp[u][1] = a[u];
+	for (auto v:g[u]) {
+		fun(v);
+		dp[u][0] += max(dp[v][0], dp[v][1]);
+		dp[u][1] += dp[v][0];
+	}
+}
+int main() {
+	// freopen("in.txt", "r", stdin);
+	int n;
+	scanf("%d", &n);
+	for (int i=1; i<=n; i++) scanf("%d", &a[i]);
+	for (int i=1; i<n; i++) {
+		int u, v;
+		scanf("%d%d", &v, &u);
+		g[u].push_back(v);
+		vis[v] = 1;
+	}
+	for (int i=1; i<=n; i++) {
+		if (!vis[i]) {
+			rt = i;
+			break;
+		}
+	}
+	fun(rt);
+	printf("%d\n", max(dp[rt][0], dp[rt][1]));
+	return 0;
+}
+\end{lstlisting}
+
+
+\subsection{状压DP}
+$n*n$的棋盘，放$k$个国王，使得两两不攻击的方案数,国王可以攻击八个方向\\
+\begin{lstlisting}
+const int maxn = 2e5 + 5;
+
+int cnt = 0;
+int sta[1500], x[1500];
+ll dp[15][1500][150];
+int main() {
+	// freopen("in.txt", "r", stdin);
+	int n, K;
+	cin >> n >> K;
+	for (int i = 0; i < (1 << n); ++i) {
+		if (i & (i << 1)) continue;
+		int sum = 0;
+		for (int j = 0; j < n; j++) {
+			if (i & (1 << j)) sum++;
+		}
+		sta[++cnt] = i;
+		x[cnt] = sum;
+	}
+	for (int i = 1; i <= cnt; i++) dp[1][i][x[i]] = 1;
+	for (int i = 2; i <= n; i++) {
+		for (int j = 1; j <= cnt; j++) {
+			for (int k = 1; k <= cnt; k++) {
+				if (sta[j] & sta[k]) continue;
+				if (sta[j] & (sta[k] << 1)) continue;
+				if ((sta[j] << 1) & sta[k]) continue;
+				for (int s = K; s >= x[j]; s--) dp[i][j][s] += dp[i - 1][k][s - x[j]];
+			}
+		}
+	}
+	ll ans = 0;
+	for (int i = 1; i <= cnt; i++) ans += dp[n][i][K];
+	cout << ans << '\n';
+	return 0;
+}
+\end{lstlisting}
 
 \subsection{数位DP}
 \subsubsection{HDU 2089 不要62}
@@ -4593,7 +4757,47 @@ int main()
 \end{lstlisting}
 
 
+\subsection{优化}
+\subsubsection{四边形不等式优化}
+对于任意的$l_1 \leq l_2 \leq r_1 \leq r_2$，均有$w(l_1, r_1)+w(l_2, r_2) \leq w(l_1, r_2)+w(l_2, r_1)$成立，则满足四边形不等式\\
 
+\begin{lstlisting}
+const int maxn = 1e4 + 5;
+
+int a[205], pre[205];
+int dp2[205][205], m[205][205];
+
+int main() {
+	// freopen("in.txt", "r", stdin);
+	int n;
+	cin >> n;
+	for (int i = 1; i <= n; i++) {
+		cin >> a[i];
+		a[i + n] = a[i];
+	}
+	for (int i = 1; i <= (n<<1); i++) {
+		pre[i] = pre[i - 1] + a[i];
+		m[i][i] = i;
+	}
+	for (int i = (n<<1); i >= 1; i--) {
+		for (int j = i + 1; j <= (n<<1); j++) {
+			dp2[i][j] = inf;
+			for (int k = m[i][j - 1]; k <= m[i + 1][j]; k++) {
+				if (dp2[i][j] > dp2[i][k] + dp2[k + 1][j] + pre[j] - pre[i - 1]) {
+					dp2[i][j] = dp2[i][k] + dp2[k + 1][j] + pre[j] - pre[i - 1];
+					m[i][j] = k;
+				}
+			}
+		}
+	}
+	int mi = inf;
+	for (int i = 1, j = n; j <= (n<<1); i++, j++) {
+		mi = min(mi, dp2[i][j]);
+	}
+	cout << mi << '\n';
+	return 0;
+}
+\end{lstlisting}
 
 
 \section{字符串}
@@ -7302,6 +7506,1581 @@ next_permutation(array)	//一种排列的下一种排列
 
 
 \section{计算几何}
+\subsection{点（向量）模板}
+\begin{lstlisting}
+const double eps = 1e-8;
+const double inf = 1e20;
+const double pi = acos(-1.0);
+const int maxp = 1010;
+// 精度三态函数
+int sgn(double x) {
+	if(fabs(x) < eps) return 0;
+	if(x < 0) return -1;
+	else return 1;
+}
+typedef  struct Point vec; // 向量
+struct Point {
+	double x, y;
+	double poe;//与原点斜率
+	Point() {}
+	Point(double _x,double _y) {
+		x = _x;
+		y = _y;
+	}
+	void input() {
+		scanf("%lf%lf", &x, &y);
+	}
+	void output() {
+		printf("%.2f %.2f\n", x, y);
+	}
+	vec chuizhi() { //返回垂直向量
+		return vec(-y, x);
+	}
+	bool operator == (Point b)const {
+		return sgn(x-b.x) == 0 && sgn(y-b.y) == 0;
+	}
+	bool operator < (Point b)const {
+		return sgn(x-b.x)== 0?sgn(y-b.y)<0:x<b.x;
+	}
+	Point operator -(const Point &b)const {
+		return Point(x-b.x,y-b.y);
+	}
+	// 向量叉积  a^b>0,a在b的顺时针，<0,逆时针，=0，共线（平行），同向或反向
+	double operator ^(const Point &b)const {
+		return x*b.y - y*b.x;
+	}
+	// 向量点积  a · b = |a| |b|  cosθ， θ为a，b夹角，a*b<0,说明夹角是钝角，=0垂直，大于0是锐角
+	double operator *(const Point &b)const {
+		return x*b.x + y*b.y;
+	}
+	//到原点的距离
+	double len() {
+		return hypot(x,y);
+	}
+	double len2() {
+		return x*x + y*y;
+	}
+
+	// 当前点到点 p 的距离
+	double distance(Point p) {
+		return hypot(x-p.x,y-p.y);
+	}
+	Point operator +(const Point &b)const{
+		return Point(x+b.x,y+b.y);
+	}
+	Point operator *(const double &k)const{
+		return Point(x*k,y*k);
+	}
+	Point operator /(const double &k)const{
+		return Point(x/k,y/k);
+	}
+	//返回的是度数
+	double atn2() {
+		poe = atan2(y, x);
+		return poe;
+	}
+};
+\end{lstlisting}
+
+\subsection{直线模板}
+\begin{lstlisting}
+struct Line{
+	Point s,e;
+	double poe;
+	Line(){}
+	Line(Point _s,Point _e){
+		s = _s;
+		e = _e;
+	}
+	bool operator ==(Line v){
+		return (s == v.s)&&(e == v.e);
+	}
+	void input(){
+		s.input();
+		e.input();
+	}
+	// 线段长度
+	double length(){
+		return s.distance(e);
+	}
+	//与x轴的交点
+	double x_len() {
+		return e.x - (s.x - e.x) * e.y / (s.y - e.y);
+	}
+	//与y轴的交点
+	double y_len() {
+		return e.y - (s.x - e.x) * e.x / (s.y - e.y);
+	}
+	// 点 p 是否在当前线段上
+	bool pointonseg(Point p){
+		//第一个是判断直线上（叉积），第二个是线段内（点积）(钝角小于0)
+		return sgn((p-s)^(e-s)) == 0 && sgn((p-s)*(p-e)) <= 0;
+	}
+	// 两条直线的交点  （如果要线段的交点，则在前面判定两线段是否相交inter函数 ，如果要直线和线段的交点，则在前面判定Seg_inter_line）
+	pair<Point,int> operator &(const Line &b) const{
+		Point res = s;
+		if(sgn((s-e)^(b.s-b.e))==0)//共线或平行
+		{
+			if(sgn((b.s -s)^(b.e-s)) == 0) return make_pair(res,0);//重合
+			else return make_pair(res,1);//平行
+		}
+		double k = ((s-b.s)^(b.s - b.e))/((s-e)^(b.s - b.e));
+		//res.x += (e.x - s.x) *k;
+		//res.y +=(e.y - s.y) *k;
+		res =  res+(e-s)*k;
+		return make_pair(res,2);//相交
+	}
+	double atn2() {
+		poe = atan2(e.y - s.y, e.x - s.x);
+		return poe;
+	}
+};
+\end{lstlisting}
+
+\subsection{圆模板}
+\begin{lstlisting}
+truct circle
+{
+	Point o;
+	double r;
+	void input(){
+		o.input();
+		scanf("%lf", &r);
+	}
+	// 点 p 是否在当前圆内或上
+	bool pointincir(Point p){
+		return o.distance(p) <= r;
+	}
+	Point PointOncirle(double t) //圆上任意一点，t是从最顶上的点开始的角度
+	{
+		return Point(o.x + r * cos(t), o.y + r * sin(t));
+	}
+};
+\end{lstlisting}
+
+\subsection{两点距离}
+\begin{lstlisting}
+double dist(Point a,Point b){
+	return sqrt((b-a)*(b-a));
+}
+\end{lstlisting}
+
+\subsection{叉积}
+\begin{lstlisting}
+//叉积，判断p相对于a->b向量的位置，>0,p在ab的顺时针，<0,逆时针，=0在ab直线上
+//也可理解为>0时，a->p 在a->b的顺时针方向，其几何意义就是以两个向量为边的平行四边形的面积
+double xmult(Point p ,Point a,Point b) {
+	return (p-a)^(b-a);
+}
+\end{lstlisting}
+
+\subsection{点积}
+\begin{lstlisting}
+//点积  大于0，∠bpa是锐角，小于0是钝角，=0垂直
+double dot(Point p ,Point a,Point b) {
+	return (a-p)*(b-p);
+}
+\end{lstlisting}
+
+\subsection{两线段是否相交}
+\begin{lstlisting}
+//这是判断两线段是否相交，判断直线是否相交们只需判断是否平行就行（线里面的函数）
+int inter(Line l1,Line l2){
+	return
+	max(l1.s.x,l1.e.x) >= min(l2.s.x,l2.e.x)
+	&& max(l2.s.x,l2.e.x) >= min(l1.s.x,l1.e.x)
+	&& max(l1.s.y,l1.e.y) >= min(l2.s.y,l2.e.y)
+	&& max(l2.s.y,l2.e.y) >= min(l1.s.y,l1.e.y)
+	&& sgn((l2.s-l1.s)^(l1.e-l1.s))*sgn((l2.e-l1.s)^(l1.e-l1.s))<=0
+	&& sgn((l1.s-l2.s)^(l2.e-l2.s))*sgn((l1.e-l2.s)^(l2.e-l2.s))<=0;
+}
+\end{lstlisting}
+
+\subsection{判断直线和线段相交}
+\begin{lstlisting}
+//判断直线和线段相交
+bool Seg_inter_line(Line l1,Line l2) //判断直线l1和线段l2是否相交
+{
+	//就是判断l2的两个端点是否在l1的两边，用叉积来计算l2线段的两个端点在l1直线同侧还是异侧
+	//return sgn((l2.s-l1.e)^(l1.s-l1.e))*sgn((l2.e-l1.e)^(l1.s-l1.e)) <= 0;
+	return sgn(xmult(l2.s,l1.s,l1.e)*sgn(xmult(l2.e,l1.s,l1.e))<=0);//判断l1 和l2是否相交，用叉积来计算l2线段的两个端点在l1直线同侧还是异侧
+}
+\end{lstlisting}
+
+\subsection{判断点p是否在线段l上}
+\begin{lstlisting}
+int onseg(Point p,Line l)//判断点p是否在线段l上
+{
+	return
+		sgn(xmult(p,l.s,l.e))==0 &&//叉积,或者 sgn((l.s-p)^(l.e-p))==0 &&
+		sgn(p.x - l.s.x) * (p.x-l.e.x)<=0 &&
+		sgn(p.y - l.s.y) * (p.y - l.e.y)<=0;
+}
+\end{lstlisting}
+
+\subsection{判断凸多边形}
+\begin{lstlisting}
+//允许共线边
+//点可以是顺时针给出也可以是逆时针给出
+//点的编号1~n-1
+bool isconvex(Point poly[],int n) {
+	bool s[3];
+	memset(s,false,sizeof(s));
+	for(int i=0;i<n;i++) {
+		//如果是凸多边形，那么poly[(i+2)]一直在poly[(i+1)]的逆时针，一直都是s[2]true，一旦在顺时针了，s[0]也true就return false；
+		s[sgn((poly[(i+1)%n]-poly[i])^(poly[(i+2)%n]-poly[i]))+1] =true;
+		if(s[0]&&s[2]) return false;
+	}
+	return true;
+}
+\end{lstlisting}
+
+\subsection{判断点在任意多边形内}
+\begin{lstlisting}
+int inPoly(Point p,Point poly[],int n) {
+	int cnt;
+	Line ray,side;
+	cnt = 0;
+	ray.s = p;
+	ray.e.y = p.y;
+	ray.e.x = -100000000000.0;//-INF,注意取值防止越界
+
+	for(int i = 0;i < n;i++) {
+		side.s = poly[i];
+		side.e = poly[(i+1)%n];
+
+		if(onseg(p,side))return 0;
+
+		//如果平行轴则不考虑
+		if(sgn(side.s.y - side.e.y) == 0)
+			continue;
+
+	if(onseg(side.s,ray)) {
+		if(sgn(side.s.y - side.e.y) > 0)cnt++;
+	} else if(onseg(side.e,ray)) {
+		if(sgn(side.e.y - side.s.y) > 0)cnt++;
+	} else if(inter(ray,side))
+		cnt++;
+	}
+	if(cnt % 2 == 1)return 1;
+	else return -1;
+}
+\end{lstlisting}
+
+\subsection{点到线段最近的点}
+\begin{lstlisting}
+Point NearestPointToLineSeg(Point P,Line L) {
+	Point result;
+	double t = ((P-L.s)*(L.e-L.s))/((L.e-L.s)*(L.e-L.s));
+	//点到直线的距离，即点在线段的上方
+	if(t >= 0 && t <= 1) {
+		result.x = L.s.x + (L.e.x - L.s.x)*t;
+		result.y = L.s.y + (L.e.y - L.s.y)*t;
+		//cout<<1;
+	}
+	else//点不在线段上方
+	{
+		if(dist(P,L.s) < dist(P,L.e))
+			result = L.s;
+		else result = L.e;
+		//cout<<2;
+	}
+	return result;
+}
+\end{lstlisting}
+
+\subsection{点到线段的距离}
+\begin{lstlisting}
+double dian_dao_xianduan(Line L,Point P) {
+	Point result;
+	double t = ((P-L.s)*(L.e-L.s))/((L.e-L.s)*(L.e-L.s));
+	//点到直线的距离，即点在线段的上方
+	if(t >= 0 && t <= 1) {
+		result.x = L.s.x + (L.e.x - L.s.x)*t;
+		result.y = L.s.y + (L.e.y - L.s.y)*t;
+		//cout<<1;
+	}
+	else//点不在线段上方
+	{
+		if(dist(P,L.s) < dist(P,L.e))
+			result = L.s;
+		else result = L.e;
+		//cout<<2;
+	}
+	return result.distance(P);
+}
+\end{lstlisting}
+
+\subsection{多边形模板}
+\begin{lstlisting}
+//求一个多边形的面积，用叉积求，叉积是两个向量合成一个四边形的面积
+struct polygon{
+	int num;
+	Point po[20];
+	void add(Point q){po[++num]=q;}
+	double area() //多边形面积
+	{
+		double ans = 0;
+		po[0] = po[num];
+		for (int i = 0; i < num; i++)
+			ans += (po[i] ^ po[i + 1]);
+		ans = fabs(ans) * 0.5;
+		return ans;
+	}
+	double zhouchang() {
+		po[0] = po[num];
+		double sum = 0;
+		for (int i = 0; i < num; i++)
+			sum += (po[i] - po[i + 1]).len();
+		return sum;
+	}
+};
+\end{lstlisting}
+
+\subsection{三角形abc的外接圆圆心}
+\begin{lstlisting}
+Point circle_center( Point a,  Point b,  Point c)
+{
+	Point center;
+	double a1 = b.x - a.x, b1 = b.y - a.y, c1 = (a1 * a1 + b1 * b1) / 2;
+	double a2 = c.x - a.x, b2 = c.y - a.y, c2 = (a2 * a2 + b2 * b2) / 2;
+	double d = a1 * b2 - a2 * b1;
+	center.x = a.x + (c1 * b2 - c2 * b1) / d;
+	center.y = a.y + (a1 * c2 - a2 * c1) / d;
+	return center;
+}
+\end{lstlisting}
+
+\subsection{最小圆覆盖}
+\begin{lstlisting}
+// 返回能覆盖所有点的半径最小圆
+circle min_cover_circle(Point p[] ,int n) {
+	random_shuffle(p, p + n);             ///打乱所有点
+	circle cc;
+	Point c = p[0];
+	double r = 0.0;
+
+	for(int i =1;i<n;i++) {
+		if (sgn(dist(p[i], c) - r) > 0) ///pi在圆外部
+		{
+			c = p[i];
+			r = 0;                ///将圆心设为pi半径为0
+			for (int j = 0; j < i; ++j) ///重新检查前面的点
+			{
+				if (sgn(dist(p[j], c) - r) > 0)///两点定圆
+				{
+					c.x = (p[i].x + p[j].x) / 2;
+					c.y = (p[i].y + p[j].y) / 2;
+					r = dist(p[j], c);
+					for (int k = 0; k < j; ++k) {
+						if (sgn(dist(p[k], c) - r) > 0) {
+							c = circle_center(p[i], p[j], p[k]);
+							r = dist(p[i], c);
+						}
+					}
+				}
+			}
+		}
+	}
+	cc.o = c;
+	cc.r = r;
+	return cc;
+}
+\end{lstlisting}
+
+\subsection{浮点型gcd}
+\begin{lstlisting}
+double gcd(double x, double y) //浮点型gcd
+{
+	while (fabs(x) > eps && fabs(y) > eps) {
+		if (x > y)
+			x -= floor(x / y) * y;
+		else
+			y -= floor(y / x) * x;
+	}
+	return x + y;
+}
+\end{lstlisting}
+
+\subsection{极角排序}
+\begin{lstlisting}
+bool cmp(vec a, vec b) //极角排序,通过叉积进行极角排序
+{
+	vec c(0, 0);
+	if (sgn((a - c) ^ (b - c)) == 0)
+		return a.x < b.x;
+	return sgn((a - c) ^ (b - c)) > 0;
+}
+bool cmp2(vec a, vec b) {
+	return a.y < b.y;
+}
+bool cmp1( Point A, Point B)
+{
+	if(A.x==B.x)
+		return A.y<B.y;
+	else
+		return A.x<B.x;
+}
+Point p[maxp];
+Point temp[maxp];
+int pos;
+///使用atan2会丢失精度，尽量不用这种
+bool cmp3(Point a,Point b)
+{
+
+	//double tmp  = (a-p[pos])^(b-p[pos]);
+	Point aa = a - p[pos];
+	Point bb = b - p[pos];
+	double tmp = atan2(aa.y,aa.x) - atan2(bb.y,bb.x);
+	if(sgn(tmp)==0) return dist(a,p[pos])<dist(b,p[pos]);
+	else if(sgn(tmp)<0) return true;//说明pa在pb右边，需更靠近
+	else return false;
+}
+bool cmp4(Point a,Point b) //这种就是上面cmp那种，用叉积的，只不过等于的时候，距离p[pos]近的排前面
+{
+	double tmp  = (a-p[pos])^(b-p[pos]);
+	if(sgn(tmp)==0) return dist(a,p[pos])<dist(b,p[pos]);
+	else if(sgn(tmp)>0) return true;//说明pa在pb右边，需更靠近
+	else return false;
+}
+
+int qua(Point a)
+{
+	if(a.x>0&&a.y>=0)  return 1;
+	if(a.x<=0&&a.y>0)  return 2;
+	if(a.x<0&&a.y<=0)  return 3;
+	if(a.x>=0&&a.y<0)  return 4;
+
+}
+
+
+bool cmp5(Point a,Point b)  //先按象限从小到大排序 再按极角从小到大排序
+{
+	if(qua(a)==qua(b))//返回值就是象限
+		return cmp(a,b);
+	else return qua(a)<qua(b);
+}
+\end{lstlisting}
+
+\subsection{平面最近点对}
+\begin{lstlisting}
+// 返回距离
+double mindist(int l, int r) //平面最近点对
+{
+	if (l == r)
+		return 2<<20;
+	if(l+1==r)
+		return dist(p[l],p[r]);
+	int mid = (l + r) >> 1;
+
+	double ans = mindist(l, mid);
+	ans = min(ans, mindist(mid + 1, r));
+
+	int tot = 0;
+	for (int i = l; i <= r; i++)
+		if (fabs(p[mid].x - p[i].x) <= ans)
+			temp[tot++] = p[i];
+
+	sort(temp, temp + tot, cmp2);
+
+	for (int i = 0; i < tot; i++)
+		for (int j = i + 1; j < tot; j++) {
+			if (temp[j].y - temp[i].y >=ans)
+				break;
+			ans = min(ans, dist(temp[j],temp[i]));
+		}
+	return ans;
+}
+void mindistsolve() {
+	int n;
+	scanf("%d", &n);
+	for(int i = 0; i < n; ++i)
+		p[i].input();
+	sort(p,p+n,cmp1);
+	double ans = mindist(0,n-1);
+	printf("%.4f\n", ans);
+}
+\end{lstlisting}
+
+\subsection{求多边形的重心}
+\begin{lstlisting}
+double sanjiaoxingarea(Point p0,Point p1,Point p2) {
+	double area=0;
+	area=p0.x*p1.y+p1.x*p2.y+p2.x*p0.y-p1.x*p0.y-p2.x*p1.y-p0.x*p2.y;
+	return area/2;
+}
+///上面的快一点，下面的慢一点
+double sanjiaoxingarea2(Point p0,Point p1,Point p2) {
+	return(p1-p0)^(p2-p0)/2;
+}
+
+Point duo_zhongxin(Point po[], int n) //多边形重心
+{
+	Point p0,p1,p2;
+	double sumarea=0,sumx=0,sumy=0;
+	p0 = po[0];p1 = po[1];
+	for(int i=2;i<n;i++) {
+		p2 = po[i];
+		double area=sanjiaoxingarea2(p0,p1,p2);//求新添三角形的面积
+		sumarea+=area;
+		sumx+=(p0.x+p1.x+p2.x)*area;
+		sumy+=(p0.y+p1.y+p2.y)*area;
+		p1=p2;//求总面积
+	}
+	p2.x = sumx/sumarea/3;
+	p2.y = sumy/sumarea/3;
+	return p2;
+}
+
+//另外一种
+Point Gravity(Point p[], int n){//返回多边形的重心
+	double area = 0;
+	Point center;
+	center.x = 0;
+	center.y = 0;
+	for (int i = 0; i < n-1; i++) {
+		area += (p[i].x*p[i+1].y - p[i+1].x*p[i].y)/2;
+		center.x += (p[i].x*p[i+1].y - p[i+1].x*p[i].y) * (p[i].x + p[i+1].x);
+		center.y += (p[i].x*p[i+1].y - p[i+1].x*p[i].y) * (p[i].y + p[i+1].y);
+	}
+	area += (p[n-1].x*p[0].y - p[0].x*p[n-1].y)/2;
+	center.x += (p[n-1].x*p[0].y - p[0].x*p[n-1].y) * (p[n-1].x + p[0].x);
+	center.y += (p[n-1].x*p[0].y - p[0].x*p[n-1].y) * (p[n-1].y + p[0].y);
+	center.x /= 6*area;
+	center.y /= 6*area;
+	return center;
+}
+\end{lstlisting}
+
+\subsection{将多边形的点逆时针排序}
+\begin{lstlisting}
+// 未用例题证明
+Point center;
+bool PointCmp(const Point &a,const Point &b) {
+	if (a.x >= 0 && b.x < 0)
+		return true;
+	if (a.x == 0 && b.x == 0)
+		return a.y > b.y;
+	//向量OA和向量OB的叉积
+	int det = (a.x - center.x) * (b.y - center.y) - (b.x - center.x) * (a.y - center.y);
+	if (det < 0)
+		return true;
+	if (det > 0)
+		return false;
+	//向量OA和向量OB共线，以距离判断大小
+	int d1 = (a.x - center.x) * (a.x - center.x) + (a.y - center.y) * (a.y - center.y);
+	int d2 = (b.x - center.x) * (b.x - center.y) + (b.y - center.y) * (b.y - center.y);
+	return d1 > d2;
+}
+bool Cmp(const Point &a,const Point &b){
+	return !PointCmp(a,b);
+}
+void ClockwiseSortPoints(Point* vPoints, int n) {
+	//计算重心
+	center=Gravity(vPoints,n);
+	sort(vPoints,vPoints+n,Cmp);
+}
+\end{lstlisting}
+
+\subsection{凸包}
+\begin{lstlisting}
+// 栈s就是凸包，具体使用看后面例题
+//原始点
+Point p[MAXN];
+//凸包的栈
+Point s[MAXN];
+int n,top;
+bool cmp(Point p1,Point p2) {
+	int tmp = xmult(p1,p[0],p2);
+	if(sgn(tmp)>0) return true;
+	else if(sgn(tmp)==0 && dist(p[0],p1)<dist(p[0],p2)) return true;
+	else return false;
+}
+
+void graham() {
+	Point p0 = p[0];
+	int k = 0;
+	//找到最左下角的点
+	for(int i=1;i<n;i++) {
+		if( (p0.y>p[i].y) || ((p0.y==p[i].y)&&(p0.x>p[i].x)) ) {
+			p0 = p[i];
+			k=i;
+		}
+	}
+	p[k] = p[0];
+	p[0] = p0;
+	//其他点极角排序
+	sort(p+1,p+n,cmp);
+	if(n==1) {
+		top = 0;s[0] = p[0];
+	}
+	if(n==2) {
+		top =1;
+		s[0] =p[0];
+		s[1] = p[1];
+	}
+	if(n>2) {
+		top =1;
+		s[0] =p[0];
+		s[1] = p[1];
+		for(int i=2;i<n;i++) {
+			while(top>0 && sgn(xmult(s[top],s[top-1],p[i]))<=0) top--; //注意这里要<=0，要把共线的也去掉，但poj1228就要<0,要把共线的也要进栈
+			top++;
+			s[top] = p[i];
+		}
+	}
+	//    //底下这个玩意用来输出凸包上点的坐标
+	//   for(int i=0;i<=top;++i)
+	//       printf("(%d,%d)\n",s[i].x,s[i].y);
+}
+\end{lstlisting}
+
+\subsection{凸包直径，旋转卡壳}
+\begin{lstlisting}
+//选择卡壳得到凸包的直径，凸包上最远的两个点的距离（先graham求得凸包，p是原始点，s是凸包的点），要特判只有两个点的情况
+double rotating_caliper(){
+	double ans = 0;
+	if(n==3){
+		ans=max(dist(p[0],p[1]),dist(p[0],p[2]));
+		ans=max(ans,dist(p[1],p[2]));
+	} else {
+		int j =2;
+		s[top+1] = s[0];//这里好像做不做都行
+		for(int i=0;i<=top;i++) {
+			while(abs(xmult(s[i],s[i+1],s[j]))<abs(xmult(s[i],s[i+1],s[j+1])))
+			//while(abs((s[i]-s[i+1])^(s[j]-s[i+1]))<abs((s[i]-s[i+1])^(s[j+1]-s[i+1])))
+				j = (j+1)%(top+1);//上面不做top，这里应该是top，不是top+1
+			ans = max(ans,dist(s[i],s[j]));
+		}
+	}
+	return ans;
+}
+\end{lstlisting}
+
+\subsection{半平面交}
+\begin{lstlisting}
+// 求多边形的核是否存在，注意点是逆时针给的，如果是顺时针要reverse一下，具体使用看下面例题
+//上面Line模板里面换下相交的重载符&
+Point operator &(const Line &b) const{
+	Point res = s;
+	double k = ((s-b.s)^(b.s - b.e))/((s-e)^(b.s - b.e));
+	res =  res+(e-s)*k;
+	return res;
+}
+
+Line Q[MAXN];  //直线的双端队列
+Point p[MAXN]; //记录最初给的点集
+Line line[MAXN]; //由最初的点集生成直线的集合
+Point pp[MAXN]; //记录半平面交的结果的点集
+
+//半平面交，直线的左边代表有效区域
+bool HPIcmp(Line a,Line b) { //直线排序函数
+	if(fabs(a.k - b.k) > eps)return a.k < b.k; //斜率排序
+	//斜率相同我也不知道怎么办
+	return ((a.s - b.s)^(b.e - b.s)) < 0;
+}
+
+void HPI(Line line[], int n, Point res[], int &resn)
+{ //line是半平面交的直线的集合 n是直线的条数 res是结果
+	//的点集 resn是点集里面点的个数,res是一个多边形的区域
+	int tot = n;
+	sort(line,line+n,HPIcmp);
+	tot = 1;
+	for(int i = 1;i < n;i++)
+		if(fabs(line[i].k - line[i-1].k) > eps) //去掉斜率重复的
+			line[tot++] = line[i];
+	int head = 0, tail = 1;
+	Q[0] = line[0];
+	Q[1] = line[1];
+	resn = 0;
+	for(int i = 2; i < tot; i++)
+	{ //如果双端队列底端或顶端两个半平面的交点在当前半平面之外，则删除
+		if(fabs((Q[tail].e-Q[tail].s)^(Q[tail-1].e-Q[tail-1].s)) < eps || fabs((Q[head].e-Q[head].s)^(Q[head+1].e-Q[head+1].s)) < eps)
+			return;
+		//判断顶端的两个半平面的交点是否在加入线右边
+		while(head < tail && (xmult(Q[tail]&Q[tail-1],line[i].s,line[i].e)) > eps)
+			tail--;
+		//判断底端的两个半平面的交点是否在加入线右边
+		while(head < tail && (xmult(Q[head]&Q[head+1],line[i].s,line[i].e)) > eps)
+			head++;
+		Q[++tail] = line[i];
+	}
+	//最后判断最先加入的直线和最后的直线的影响
+	while(head < tail && (xmult(Q[tail]&Q[tail-1],Q[head].s,Q[head].e)) > eps)
+		tail--;
+	while(head < tail && (xmult(Q[head]&Q[head+1],Q[tail].s,Q[tail].e)) > eps)
+		head++;
+	if(tail <= head + 1) return;
+	//保存点到 res数组
+	for(int i = head; i < tail; i++)
+		res[resn++] = Q[i]&Q[i+1];
+	if(head < tail - 1)
+		res[resn++] = Q[head]&Q[tail];
+}
+\end{lstlisting}
+
+\subsection{半平面交的cut模板}
+\begin{lstlisting}
+// poj3335解，cut用起来比较麻烦，但有时必须要用cut，比如求不等式方程是否有可行解（这里是默认点是顺时针的）
+//有时精度要开到1e-18
+const double eps = 1e-18;
+//通过两点，确定直线方程
+void Get_equation(Point p1,Point p2,double &a,double &b,double &c) {
+	a = p2.y - p1.y;
+	b = p1.x - p2.x;
+	c = p2.x*p1.y - p1.x*p2.y;
+}
+//求交点  直线p1p2和直线系数为abc的交点
+Point Intersection(Point p1,Point p2,double a,double b,double c) {
+	double u = fabs(a*p1.x + b*p1.y + c);
+	double v = fabs(a*p2.x + b*p2.y + c);
+	Point t;
+	t.x = (p1.x*v + p2.x*u)/(u+v);
+	t.y = (p1.y*v + p2.y*u)/(u+v);
+	return t;
+}
+//计算多边形面积
+double CalcArea(Point p[],int n) {
+	double res = 0;
+	for(int i = 0;i < n;i++)
+		res += (p[i]^p[(i+1)%n]);
+	return fabs(res/2);
+}
+//每次cut的临时点数组
+Point tp[110];
+//最后的核的点
+Point p[110];
+//初始点
+Point pp[110];
+int n;//初始点的个数
+void Cut(double a, double b, double c, Point p[], int &cnt)//用直线ax+by+c==0切割多边形,返回核点和点的数量,第一个传进来的cnt必须要是原始点的数量
+{
+	int tmp = 0;
+	for(int i = 1; i <= cnt; ++i) {
+		if(sgn(a*p[i].x + b*p[i].y + c) >=0)//题目是顺时钟给出点的，所以一个点在直线右边的话，那么带入值就会大于等于0，说明这个点还在切割后的多边形内，将其保留
+			tp[++tmp] = p[i];
+		else {
+			if(sgn(a*p[i-1].x + b*p[i-1].y + c) >0)//判断这个点前后的两个点，它和它相邻的点构成直线与，ax+by+c==0所构成的交点可能在新切割出的多边形内，
+				tp[++tmp] = Intersection(p[i-1], p[i], a, b, c);
+			if(sgn(a*p[i+1].x + b*p[i+1].y + c) >0)
+				tp[++tmp] = Intersection(p[i], p[i+1], a, b, c);
+		}
+	}
+	for(int i = 1; i <= tmp; ++i)//更新切割后的多边形
+		p[i] = tp[i];
+	p[0] = p[tmp];
+	p[tmp+1] = p[1];
+	cnt = tmp;
+}
+
+
+void solve() {
+	//初始化，pp一直都是初始点，而p每cut一次都可能变
+	for(int i=1;i<=n;i++) {
+		p[i]=pp[i];
+	}
+	pp[n+1]=pp[1];
+	p[n+1]=p[1];
+	p[0]=p[n];
+	int resn=n;
+
+	for(int i=1;i<=n;i++) {
+		double a,b,c;
+		Get_equation(pp[i],pp[i+1],a,b,c);
+		Cut(a,b,c,p,resn);
+	}
+	if(resn) printf("YES\n"); //如果最终点集中点的个数不为 0
+	else printf("NO\n");
+}
+
+int main() {
+	int t;
+	scanf("%d",&t);
+	while(t--) {
+		scanf("%d",&n);
+		for(int i=1;i<=n;i++) {
+			pp[i].input();
+		}
+	solve();
+	}
+	return 0;
+}
+\end{lstlisting}
+
+\subsection{将线段平移}
+\begin{lstlisting}
+// 有些cut里面会用到, 看后面例题
+void change(Point a,Point b,Point &c,Point &d,double p)
+{ //将线段ab往左移动距离p,修改得到线段cd
+	double len=dist(a,b);
+	/*三角形相似推出下面公式*/
+	double dx=(a.y-b.y)*p/len;
+	double dy=(b.x-a.x)*p/len;
+	c.x=a.x+dx; c.y=a.y+dy;
+	d.x=b.x+dx; d.y=b.y+dy;
+}
+void change2(Point a,Point b,Point &c,Point &d,double p)
+{ //将线段ab往右移动距离p,修改得到线段cd
+	double len=dist(a,b);
+	/*三角形相似推出下面公式*/
+	double dx=(b.y-a.y)*p/len;
+	double dy=(a.x-b.x)*p/len;
+	c.x=a.x+dx; c.y=a.y+dy;
+	d.x=b.x+dx; d.y=b.y+dy;
+}
+\end{lstlisting}
+
+\subsection{例题}
+\subsubsection{凸包周长}
+\begin{lstlisting}
+#define MAXN 110
+using namespace std;
+const double eps = 1e-8;
+const double inf = 1e20;
+const double pi = acos(-1.0);
+const int maxp = 1010;
+//求凸包的周长
+// 精度三态函数
+int sgn(double x) {
+	if(fabs(x) < eps) return 0;
+	if(x < 0) return -1;
+	else return 1;
+}
+typedef  struct Point vec; // 向量
+//省略点模板
+struct Point {
+	double x, y;
+};
+double dist(Point a,Point b){
+	return sqrt((b-a)*(b-a));
+}
+
+//叉积，判断p相对于a->b向量的位置，>0,p在ab的顺时针，<0,逆时针，=0在ab直线上
+double xmult(Point p ,Point a,Point b) {
+	return (p-a)^(b-a);
+}
+//点积  大于0，∠bpa是锐角，小于0是钝角，=0垂直
+double dot(Point p ,Point a,Point b) {
+	return (a-p)*(b-p);
+}
+
+//原始点
+Point p[MAXN];
+//凸包的栈
+Point s[MAXN];
+int n,top;
+bool cmp(Point p1,Point p2) {
+	int tmp = xmult(p1,p[0],p2);
+	if(sgn(tmp)>0) return true;
+	else if(sgn(tmp)==0 && dist(p[0],p1)<dist(p[0],p2)) return true;
+	else return false;
+}
+
+void graham() {
+	Point p0 = p[0];
+	int k = 0;
+	//找到最左下角的点
+	for(int i=1;i<n;i++) {
+		if( (p0.y>p[i].y) || ((p0.y==p[i].y)&&(p0.x>p[i].x)) ) {
+			p0 = p[i];
+			k=i;
+		}
+	}
+	p[k] = p[0];
+	p[0] = p0;
+	//其他点极角排序
+	sort(p+1,p+n,cmp);
+	if(n==1) {
+		top = 0;s[0] = p[0];
+	}
+	if(n==2) {
+		top =1;
+		s[0] =p[0];
+		s[1] = p[1];
+	}
+	if(n>2) {
+		top =1;
+		s[0] =p[0];
+		s[1] = p[1];
+		for(int i=2;i<n;i++) {
+			while(top>0 && sgn(xmult(s[top],s[top-1],p[i]))<=0) top--;
+			top++;
+			s[top] = p[i];
+		}
+	}
+	//    //底下这个玩意用来输出凸包上点的坐标
+	//   for(int i=0;i<=top;++i)
+	//       printf("(%d,%d)\n",s[i].x,s[i].y);
+}
+void getans() {
+	double ans=0.0;
+	if(top==0) ans=0.0;
+	else if(top==1)
+	ans = dist(s[0],s[1]);
+	else{
+		for(int i=0;i<=top;i++)
+			ans+=dist(s[i],s[(i+1)%(top+1)]);
+	}
+	printf("%.2f\n",ans);
+}
+int main() {
+	while(scanf("%d",&n)&&n) {
+		for(int i=0;i<n;i++)
+			p[i].input();
+		graham();
+		getans();
+	}
+	return 0;
+}
+
+\end{lstlisting}
+
+\subsubsection{半平面交cut}
+\begin{lstlisting}
+// poj3384
+//思路：这个题是在 POJ 3525 题基础上才能做的。我们已经知道了求解多边形中可以放入的一个最大的圆的半径，现在是放入两个相同的圆。我们知道，两个圆相离越近重叠面积越大，覆盖的总面积越小，也就是说找一个圆心距最大的两点就可以了。//基于前一个题，我们知道可以放入的最大圆的圆心（不是圆本身）一定在多边形的核内，放入两个圆时也是这样。假设两个圆的半径为 r ，我们就可以让多边形的每条边向内推进 r 的距离，这时候可以求出新的多边形的核，而这个核内距离最大的两点就是最大的圆心距。
+
+using namespace std;
+const double eps = 1e-18;
+// 精度三态函数
+int sgn(double x) {
+	if(fabs(x) < eps) return 0;
+	if(x < 0) return -1;
+	else return 1;
+}
+typedef  struct Point vec; // 向量
+struct Point {
+	double x, y;
+};
+
+//通过两点，确定直线方程
+void Get_equation(Point p1,Point p2,double &a,double &b,double &c) {
+	a = p2.y - p1.y;
+	b = p1.x - p2.x;
+	c = p2.x*p1.y - p1.x*p2.y;
+}
+//求交点  直线p1p2和直线系数为abc的交点
+Point Intersection(Point p1,Point p2,double a,double b,double c) {
+	double u = fabs(a*p1.x + b*p1.y + c);
+	double v = fabs(a*p2.x + b*p2.y + c);
+	Point t;
+	t.x = (p1.x*v + p2.x*u)/(u+v);
+	t.y = (p1.y*v + p2.y*u)/(u+v);
+	return t;
+}
+//计算多边形面积
+double CalcArea(Point p[],int n) {
+	double res = 0;
+	for(int i = 0;i < n;i++)
+		res += (p[i]^p[(i+1)%n]);
+	return fabs(res/2);
+}
+//每次cut的临时点数组
+Point tp[110];
+//最后的核的点
+Point p[110];
+//初始点
+Point pp[110];
+//向内推进r后的点
+Point ppp[110];
+int n;//初始点的个数
+double r;//半径
+double dist(Point a,Point b) {
+	return sqrt((a-b)*(a-b));
+}
+void change(Point a,Point b,Point &c,Point &d,double p)
+{ //将线段ab往左移动距离p,修改得到线段cd
+	double len=dist(a,b);
+	/*三角形相似推出下面公式*/
+	double dx=(a.y-b.y)*p/len;
+	double dy=(b.x-a.x)*p/len;
+	c.x=a.x+dx; c.y=a.y+dy;
+	d.x=b.x+dx; d.y=b.y+dy;
+}
+void change2(Point a,Point b,Point &c,Point &d,double p)
+{ //将线段ab往右移动距离p,修改得到线段cd
+	double len=dist(a,b);
+	/*三角形相似推出下面公式*/
+	double dx=(b.y-a.y)*p/len;
+	double dy=(a.x-b.x)*p/len;
+	c.x=a.x+dx; c.y=a.y+dy;
+	d.x=b.x+dx; d.y=b.y+dy;
+}
+
+void Cut(double a, double b, double c, Point p[], int &cnt)//用直线ax+by+c==0切割多边形,返回核点和点的数量,第一个传进来的cnt必须要是原始点的数量
+{
+	int tmp = 0;
+	for(int i = 1; i <= cnt; ++i) {
+		if(sgn(a*p[i].x + b*p[i].y + c) >=0)//题目是顺时钟给出点的，所以一个点在直线右边的话，那么带入值就会大于等于0，说明这个点还在切割后的多边形内，将其保留
+			tp[++tmp] = p[i];
+		else {
+			if(sgn(a*p[i-1].x + b*p[i-1].y + c) >0)//判断这个点前后的两个点，它和它相邻的点构成直线与，ax+by+c==0所构成的交点可能在新切割出的多边形内，
+				tp[++tmp] = Intersection(p[i-1], p[i], a, b, c);
+			if(sgn(a*p[i+1].x + b*p[i+1].y + c) >0)
+				tp[++tmp] = Intersection(p[i], p[i+1], a, b, c);
+		}
+	}
+	for(int i = 1; i <= tmp; ++i)//更新切割后的多边形
+		p[i] = tp[i];
+	p[0] = p[tmp];
+	p[tmp+1] = p[1];
+	cnt = tmp;
+}
+void init() {
+	for(int i = 1;i<=n;i++) p[i] =pp[i];
+	p[n+1] = p[1];
+	p[0] = p[n];
+}
+
+void solve() {
+	//初始化p，pp一直都是初始点，而p每cut一次都可能变
+	pp[n+1]=pp[1];
+	init();
+	int resn=n;
+	for(int i=1;i <=n;i++)
+	{ //将多边形的每条边向内移动 r 的距离,（顺时针）a，b向右移动
+		Point ta,tb;
+		change2(pp[i],pp[i+1],ta,tb,r);
+		double a,b,c;
+		Get_equation(ta,tb,a,b,c);
+		Cut(a,b,c,p,resn);
+	}
+	int x,y;
+	double dis;
+	x=0;
+	y=0;
+	dis=0;
+	//双重循环寻找距离最大的两个点
+	for(int i=1;i<=resn;i++)
+		for(int j=i+1;j<=resn;j++)
+			if(dist(p[i],p[j])>dis) {
+				x=i;
+				y=j;
+				dis=dist(p[i],p[j]);
+			}
+	printf("%.4f %.4f %.4f %.4f\n",p[x].x,p[x].y,p[y].x,p[y].y);
+}
+
+int main() {
+	while(~scanf("%d%lf",&n,&r)) {
+		for(int i = 1;i <=n;i++)
+			pp[i].input();
+		solve();
+	}
+	return 0;
+}
+\end{lstlisting}
+
+\subsubsection{半平面交求不等式解cut}
+\begin{lstlisting}
+const double eps = 1e-18;
+// 精度三态函数
+int sgn(double x) {
+	if(fabs(x) < eps) return 0;
+	if(x < 0) return -1;
+	else return 1;
+}
+typedef  struct Point vec; // 向量
+//此次省略point的模板
+struct Point {
+	double x, y;
+};
+
+//通过两点，确定直线方程
+void Get_equation(Point p1,Point p2,double &a,double &b,double &c) {
+	a = p2.y - p1.y;
+	b = p1.x - p2.x;
+	c = p2.x*p1.y - p1.x*p2.y;
+}
+//求交点  直线p1p2和直线系数为abc的交点
+Point Intersection(Point p1,Point p2,double a,double b,double c) {
+	double u = fabs(a*p1.x + b*p1.y + c);
+	double v = fabs(a*p2.x + b*p2.y + c);
+	Point t;
+	t.x = (p1.x*v + p2.x*u)/(u+v);
+	t.y = (p1.y*v + p2.y*u)/(u+v);
+	return t;
+}
+//计算多边形面积
+double CalcArea(Point p[],int n) {
+	double res = 0;
+	for(int i = 0;i < n;i++)
+		res += (p[i]^p[(i+1)%n]);
+	return fabs(res/2);
+}
+//每次cut的临时点数组
+Point tp[110];
+double V[110],U[110],W[110];
+int n;
+const double INF = 100000000000.0;
+//最后的核的点
+Point p[110];
+void Cut(double a, double b, double c, Point p[], int &cnt)//用直线ax+by+c==0切割多边形
+{
+	int tmp = 0;
+	for(int i = 1; i <= cnt; ++i) {
+		if(a*p[i].x + b*p[i].y + c > eps)
+			tp[++tmp] = p[i];
+		else {
+			if(a*p[i-1].x + b*p[i-1].y + c > eps)//判断这个点前后的两个点
+				tp[++tmp] = Intersection(p[i-1], p[i], a, b, c);
+			if(a*p[i+1].x + b*p[i+1].y + c > eps)
+				tp[++tmp] = Intersection(p[i], p[i+1], a, b, c);
+		}
+	}
+	for(int i = 1; i <= tmp; ++i)//更新切割后的多边形
+		p[i] = tp[i];
+	p[0] = p[tmp];
+	p[tmp+1] = p[1];
+	cnt = tmp;
+}
+
+bool solve(int id) {
+	p[1] = Point(0,0);
+	p[2] = Point(INF,0);
+	p[3] = Point(INF,INF);
+	p[4] = Point(0,INF);
+	p[0] = p[4];
+	p[5] = p[1];
+	int cnt = 4;
+	for(int i = 0;i < n;i++)
+		if(i != id)
+		{   //化简，x/u1 + y/v1 + z/w1 < x/u2 + y/v2 + z/w2，然后是大于，所以cut里面是顺时针，大于
+			double a = (V[id] - V[i])/(V[i]*V[id]);
+			double b = (U[id] - U[i])/(U[i]*U[id]);
+			double c = (W[id] - W[i])/(W[i]*W[id]);
+			if(sgn(a) == 0 && sgn(b) == 0 && sgn(c)<=eps) {
+				return false;
+			}
+			Cut(a,b,c,p,cnt);
+		}
+	if(sgn(CalcArea(p,cnt)) == 0)return false;
+	else return true;
+}
+int main() {
+	//freopen("in.txt","r",stdin);
+	//freopen("out.txt","w",stdout);
+	while(scanf("%d",&n) == 1) {
+		for(int i = 0;i < n;i++)
+			scanf("%lf%lf%lf",&V[i],&U[i],&W[i]);
+		for(int i = 0;i < n;i++) {
+			if(solve(i))printf("Yes\n");
+			else printf("No\n");
+		}
+	}
+	return 0;
+}
+\end{lstlisting}
+
+\subsubsection{半平面交求多边形能放得下的最大的圆}
+\begin{lstlisting}
+// poj3525
+////题意：求多边形内到边上距离最远的距离。可以转化为求多边形内可以放入的最大的圆的半径。思路：可以放入的最大圆的圆心（不是圆本身）一定在多边形的核内，假设，最大圆半径为 r 。如果我们可以将多边形的每条边向内推进 r 长度的距离，这时候可以想见多边形里面放不开这个圆了，并且圆心所在的多边形的核也一定是变成了一个点。否则就多边形的边就还可以向内推进，这个圆就不是最大的了。当我们不知道最大圆半径的时候，我们可以用二分的方法求半径的值，如果对于当前假设的圆半径 r ，每条边向内推进 r 距离后，发现多边形的核不存在了，则说明当前圆半径太大了，反之，就是圆半径小了，用二分找到最大的圆半径即可。
+
+#define MAXN 110
+using namespace std;
+const double eps = 1e-8;
+const double inf = 1e20;
+const double pi = acos(-1.0);
+const int maxp = 1010;
+// 精度三态函数
+int sgn(double x) {
+	if(fabs(x) < eps) return 0;
+	if(x < 0) return -1;
+	else return 1;
+}
+typedef  struct Point vec; // 向量
+//省略Point的模板
+struct Point {
+	double x, y;
+};
+struct Line{
+	Point s,e;
+	double poe;//也是斜率，不过懒得改这个罢了
+	double k;//斜率
+	Line(){}
+	Line(Point _s,Point _e){
+		s = _s;
+		e = _e;
+		k = atan2(e.y - s.y,e.x - s.x);
+	}
+	bool operator ==(Line v){
+		return (s == v.s)&&(e == v.e);
+	}
+	void input(){
+		s.input();
+		e.input();
+	}
+	// 两条直线的交点  （如果要线段的交点，则在前面判定两线段是否相交inter函数 ，如果要直线和线段的交点，则在前面判定Seg_inter_line）
+	Point operator &(const Line &b) const{
+		Point res = s;
+		double k = ((s-b.s)^(b.s - b.e))/((s-e)^(b.s - b.e));
+		//res.x += (e.x - s.x) *k;
+		//res.y +=(e.y - s.y) *k;
+		res =  res+(e-s)*k;
+		return res;
+	}
+};
+double dist(Point a,Point b){
+	return sqrt((b-a)*(b-a));
+}
+
+///这个要改改，看看要不要这样(p-a)^(b-a);更好对应>0,顺，<0逆
+//叉积，判断p相对于a->b向量的位置，>0,p在ab的顺时针，<0,逆时针，=0在ab直线上
+double xmult(Point p ,Point a,Point b) {
+	return (p-a)^(b-a);
+}
+//点积  大于0，∠bpa是锐角，小于0是钝角，=0垂直
+double dot(Point p ,Point a,Point b) {
+	return (a-p)*(b-p);
+}
+Line Q[MAXN];
+Point p[MAXN]; //记录最初给的点集
+Line line[MAXN]; //由最初的点集生成直线的集合
+Point pp[MAXN]; //记录半平面交的结果的点集
+
+//半平面交，直线的左边代表有效区域
+bool HPIcmp(Line a,Line b)
+{ //直线排序函数
+	if(fabs(a.k - b.k) > eps)return a.k < b.k; //斜率排序
+	//斜率相同我也不知道怎么办
+	return ((a.s - b.s)^(b.e - b.s)) < 0;
+}
+
+void HPI(Line line[], int n, Point res[], int &resn)
+{ //line是半平面交的直线的集合 n是直线的条数 res是结果
+	//的点集 resn是点集里面点的个数,res是一个多边形的区域
+	int tot = n;
+	sort(line,line+n,HPIcmp);
+	tot = 1;
+	for(int i = 1;i < n;i++)
+		if(fabs(line[i].k - line[i-1].k) > eps) //去掉斜率重复的
+			line[tot++] = line[i];
+	int head = 0, tail = 1;
+	Q[0] = line[0];
+	Q[1] = line[1];
+	resn = 0;
+	for(int i = 2; i < tot; i++)
+	{ //如果双端队列底端或顶端两个半平面的交点在当前半平面之外，则删除
+		if(fabs((Q[tail].e-Q[tail].s)^(Q[tail-1].e-Q[tail-1].s)) < eps || fabs((Q[head].e-Q[head].s)^(Q[head+1].e-Q[head+1].s)) < eps)
+			return;
+		//while(head < tail && (((Q[tail]&Q[tail-1]) - line[i].s)^(line[i].e-line[i].s)) > eps)  //判断顶端的两个半平面的交点是否在加入线右边
+		while(head < tail && (xmult(Q[tail]&Q[tail-1],line[i].s,line[i].e)) > eps)
+			tail--;
+		//while(head < tail && (((Q[head]&Q[head+1]) - line[i].s)^(line[i].e-line[i].s)) > eps)  //判断底端的两个半平面的交点是否在加入线右边
+		while(head < tail && (xmult(Q[head]&Q[head+1],line[i].s,line[i].e)) > eps)
+			head++;
+		Q[++tail] = line[i];
+	}
+	//最后判断最先加入的直线和最后的直线的影响
+	//while(head < tail && (((Q[tail]&Q[tail-1]) - Q[head].s)^(Q[head].e-Q[head].s)) > eps)
+	while(head < tail && (xmult(Q[tail]&Q[tail-1],Q[head].s,Q[head].e)) > eps)
+		tail--;
+	//while(head < tail && (((Q[head]&Q[head-1]) - Q[tail].s)^(Q[tail].e-Q[tail].e)) > eps)
+	while(head < tail && (xmult(Q[head]&Q[head+1],Q[tail].s,Q[tail].e)) > eps)
+		head++;
+	if(tail <= head + 1) return;
+	//保存点到 res数组
+	for(int i = head; i < tail; i++)
+		res[resn++] = Q[i]&Q[i+1];
+	if(head < tail - 1)
+		res[resn++] = Q[head]&Q[tail];
+}
+void change(Point a,Point b,Point &c,Point &d,double p)
+{ //将线段ab往左移动距离p,修改得到线段cd
+	double len=dist(a,b);
+	/*三角形相似推出下面公式*/
+	double dx=(a.y-b.y)*p/len;
+	double dy=(b.x-a.x)*p/len;
+	c.x=a.x+dx; c.y=a.y+dy;
+	d.x=b.x+dx; d.y=b.y+dy;
+}
+
+int n;
+double BSearch() {
+	double l=0,r=100000;
+	while(r-l>=eps){
+		double mid = (l+r)/2;
+		for(int i=0;i<n;i++){
+			Point t1,t2;
+			change(p[i],p[(i+1)%n],t1,t2,mid);
+			line[i] = Line(t1,t2);
+		}
+		int resn;
+		HPI(line,n,pp,resn);
+		//等于0说明移多了
+		if(resn==0) r = mid-eps;
+		else l = mid+eps;
+	}
+	return l;
+}
+
+int main() {
+	while(~scanf("%d",&n)&&n) {
+		for(int i = 0;i < n;i++)
+			p[i].input();
+		printf("%.6f\n",BSearch());
+	}
+	return 0;
+}
+\end{lstlisting}
+
+\subsubsection{自适应辛普森法}
+计算
+$$
+\int_{L}^{R}\frac{cx+d}{ax+b}dx
+$$
+
+\begin{lstlisting}
+#include<bits/stdc++.h>
+using namespace std;
+double a,b,c,d,l,r;
+double f(double x) {
+	return (c*x+d)/(a*x+b);       //原函数
+}
+
+double simpson(double l,double r) {      //Simpson公式,都是这个公式
+	double mid=(l+r)/2;
+	return (f(l)+4*f(mid)+f(r))*(r-l)/6;
+}
+
+double asr(double l,double r,double eps,double ans) {
+	double mid=(l+r)/2;
+	double ll=simpson(l,mid),rr=simpson(mid,r);
+	if(fabs(ll+rr-ans)<=15*eps) return ll+rr+(ll+rr-ans)/15;     //确认精度
+	return asr(l,mid,eps/2,ll)+asr(mid,r,eps/2,rr);     //精度不够则递归调用
+}
+double asr(double l,double r,double eps) {
+	return asr(l,r,eps,simpson(l,r));
+}
+int main() {
+	scanf("%lf%lf%lf%lf%lf%lf",&a,&b,&c,&d,&l,&r);
+	printf("%.6f",asr(l,r,1e-6));
+	return 0;
+}
+\end{lstlisting}
+
+\subsection{其他模板}
+\begin{lstlisting}
+int bijiao(double x, double y) { //判断x>y
+	if (fabs(x - y) < eps)
+		return 0;
+	if (x > y)
+		return 1;
+	return -1;
+}
+//返回x>=y
+int dayu_dengyu(double x, double y) {
+	if (fabs(x - y) < eps || x > y)
+		return 1;
+	return 0;
+}
+double zhixian_dian_juli(Line l, Point a) //直线到点的距离
+{
+	return fabs(xmult(a,l.s,l.e)) / l.length();
+}
+double zhixian_dian_juli2(Line l, Point a) //直线到点的距离
+{
+	return fabs((a - l.s) ^ (l.e - l.s)) / (l.e - l.s).len();
+}
+Line zhongchuixian(Line l) //求线段中垂线原理很简单,求两点的中点a,然后求个线段的向量v,再求垂直向量n,第二个点b=a+n
+{
+	Point a = (l.s + l.e) / 2.0;
+	vec tp = l.e - l.s;
+	return Line(a, a + Point(-tp.y, tp.x));
+}
+Point zhongxin_duichen(Point a, Point b) //a为点，b为对称中心
+{
+	return Point(2 * b.x - a.x, 2 * b.y - a.y);
+}
+double jiajiao(Point a, Point b, Point c) //a为角的顶点
+{
+	vec A = b - c, B = a - c, C = b - a;
+	return acos((C * C + B * B - A * A) / (B.len() * C.len() * 2));
+}
+double jiajiao(vec u, vec v) //向量夹角
+{
+	return acos((u * v) / (u.len() * v.len()));
+}
+
+Point touying(Line l1, Point p3) //c投影在直线ab上的位置
+{
+	Point p1 = l1.s;
+	Point p2 = l1.e;
+	Point foot;
+	double dx = p1.x -p2.x;
+	double dy = p1.y -p2.y;
+	double u = ((p3.x - p1.x) * dx + (p3.y - p1.y) * dy) / (dx * dx + dy * dy);
+	foot.x = p1.x + u * dx;
+	foot.y = p1.y + u * dy;
+	return foot;
+}
+Point fanshe(Line l, Point c) //求c关于直线ab的对称点c'
+{
+	Point A = touying(l, c);
+	return (A - c) * 2.0 + c;
+}
+
+double mianji(Point a, Point b, Point c) //三点面积
+{
+	return fabs((b - a) ^ (c - a)) * 0.5;
+}
+double xianduanjuli(Line l1, Line l2) //两线段距离
+{
+	if (inter(l1, l2))
+		return 0.0;
+	double minn = inf;
+	double l = dian_dao_xianduan(l1, l2.s);
+	minn = dayu_dengyu(minn, l) ? l : minn;
+	l = dian_dao_xianduan(l1, l2.e);
+	minn = dayu_dengyu(minn, l) ? l : minn;
+	l = dian_dao_xianduan(l2, l1.s);
+	minn = dayu_dengyu(minn, l) ? l : minn;
+	l = dian_dao_xianduan(l2, l1.e);
+	minn = dayu_dengyu(minn, l) ? l : minn;
+	return minn;
+}
+Point zhixian_zhixian_jiaodian(Line l1, Line l2) //两直线交点
+{
+	//double t = ((l1.s.x - l2.s.x) * (l2.s.y - l2.e.y) - (l1.s.y - l2.s.y) * (l2.s.x - l2.e.x)) / ((l1.s.x - l1.e.x) * (l2.s.y - l2.e.y) - (l1.s.y - l1.e.y) * (l2.s.x - l2.e.x));
+	double t = ((l1.s-l2.s)^(l2.s - l2.e))/((l1.s-l1.e)^(l2.s - l2.e));
+	return l1.s + (l1.e - l1.s) * t;
+}
+int zhixian_yuan_jiaodian(circle c, Line l, Point &p1, Point &p2) { //直线与圆交点以及个数
+	if (zhixian_dian_juli(l, c.o) > c.r)
+		return 0;
+	Point pi = c.o;
+	pi.x += l.s.y - l.e.y;
+	pi.y += l.e.x - l.s.x;
+	pi = zhixian_zhixian_jiaodian(Line(pi, c.o), l);
+	double t = sqrt(c.r * c.r - (pi - c.o).len() * (pi - c.o).len()) / (l.s - l.e).len();
+	p1 = pi + (l.e - l.s) * t;
+	p2 = pi - (l.e - l.s) * t;
+	return 1 + !(p1 == p2);
+}
+//线段是否和圆相交
+bool xianduan_yuan_xiangjiao(Line seg,circle cir)
+{
+	if(cir.pointincir(seg.s)||cir.pointincir(seg.e)) return true;
+	else{
+		Point d =touying(seg,cir.o);
+		double X1 = min(seg.s.x, seg.e.x), X2 = max(seg.s.x, seg.e.x);
+		double Y1 = min(seg.s.y, seg.e.y), Y2 = max(seg.s.y, seg.e.y);
+		double len1 = d.distance(cir.o);
+		//d在线段上且d和圆点的距离小于r
+		if((d.x >= X1 && d.x <= X2) && (d.y >= Y1 && d.y <= Y2) && (len1 <= cir.r))
+			return true;
+	}
+	return false;
+}
+int xianduan_yuan_jiaodian(circle a, Line l, Point &p1, Point &p2) { //线段与圆交点以及个数
+	int tmp = zhixian_yuan_jiaodian(a, l, p1, p2);
+	if (tmp == 0)
+		return 0;
+	if (l.e < l.s)
+		swap(l.s, l.e);
+	return l.pointonseg(p1) + l.pointonseg(p2) - (p1 == p2);
+}
+double yuanxin_liangdian_jiajiao(Point a, Point b, circle c) //圆心与两点形成的夹角
+{
+	Point _a = touying(Line(c.o, b), a);
+	double l = (a - _a).len();
+	return asin(l / c.r);
+}
+pair<Point, Point> yuan_yuan_jiaodian(circle a, circle b) //求圆和圆的交点
+{
+	Point tmp =  a.o - b.o;
+	double l = tmp.len();
+	double x = acos((a.r * a.r + l * l - b.r * b.r) / (2.0 * a.r * l));
+	double t = atan2((b.o - a.o).y, (b.o - a.o).x);
+	return make_pair(a.o + vec(cos(t - x) * a.r, sin(t - x) * a.r), a.o + vec(cos(x + t) * a.r, sin(t + x) * a.r));
+}
+vec xiangliang_xuanzhuan(vec a, double pi) //将向量按照起点旋转逆时针pi
+{
+	double x, y;
+	x = cos(pi) * a.x - sin(pi) * a.y;
+	y = sin(pi) * a.x + cos(pi) * a.y;
+	return vec(x, y);
+}
+pair<Point, Point> guodian_yuan_qiedian(circle a, Point p) //过一点做圆的切线求切点
+{
+	Point tmp = a.o -p;
+	double l = tmp.len();
+	double t = asin(a.r / l);
+	double lb = l * cos(t);
+	vec x = a.o - p;
+	x = x / l * lb;
+	return make_pair(p + xiangliang_xuanzhuan(x, t), p + xiangliang_xuanzhuan(x, -t));
+}
+double yuan_yuan_xiangjiao(circle a, circle b) { //圆与圆相交面积,整个围住的时候会出错，前面要加个判断是否园内才行
+	double l = (a.o - b.o).len();
+	double ang1 = 2.0 * acos((a.r * a.r + l * l - b.r * b.r) / (2.0 * a.r * l));
+	double ang2 = 2.0 * acos((b.r * b.r + l * l - a.r * a.r) / (2.0 * b.r * l));
+	double s1 = 0.5 * a.r * a.r * sin(ang1), s2 = 0.5 * b.r * b.r * sin(ang2);
+	double h1 = 0.5 * ang1 * a.r * a.r, h2 = 0.5 * ang2 * b.r * b.r;
+	return h1 + h2 - s1 - s2;
+}
+int yuanyuan_waigongqiexian(Point p, circle a, circle b, Line *l) //求两圆的外公切线以及个数
+{
+	int cnt = 0;
+	Point _o = b.o - a.o;
+	_o.atn2();
+	double base = _o.poe;
+	double d = (a.o - b.o).len(), ang = acos((a.r - b.r) / d);
+	l[cnt] = Line(a.PointOncirle(base - ang), b.PointOncirle(base - ang));
+	if (sgn((a.o - l[cnt].s) ^ (l[cnt].e - l[cnt].s)) == sgn((p - l[cnt].s) ^ (l[cnt].e - l[cnt].s))) //p和圆心在切线的同侧
+	cnt++;
+	l[cnt] = Line(a.PointOncirle(base + ang), b.PointOncirle(base + ang));
+	if (sgn((a.o - l[cnt].s) ^ (l[cnt].e - l[cnt].s)) == sgn((p - l[cnt].s) ^ (l[cnt].e - l[cnt].s)))
+	cnt++;
+	return cnt;
+}
+int yuanyuan_gongqiexian(circle a, circle b, Point *u, Point *v) //求圆和圆公切线以及切线个数
+{
+	int cnt = 0;
+	if (a.r < b.r) {
+		swap(a, b);
+		swap(u, v);
+	}
+	Point tmp = a.o - b.o;
+	double l = tmp.len();
+	double rdiff = a.r - b.r;
+	double rsum = a.r + b.r;
+	if (sgn(l - rdiff) < 0)
+		return 0;
+	double base = atan2((b.o - a.o).y, (b.o - a.o).x);
+	if (sgn(l) == 0)
+		return -1;
+	if (sgn(l - rdiff) == 0) {
+		u[cnt] = v[cnt] = a.PointOncirle(base);
+		cnt++;
+		return 1;
+	}
+	double ang = acos((a.r - b.r) / l);
+	u[cnt] = a.PointOncirle(base + ang);
+	v[cnt] = b.PointOncirle(base + ang);
+	cnt++;
+	u[cnt] = a.PointOncirle(base - ang);
+	v[cnt] = b.PointOncirle(base - ang);
+	cnt++;
+	if (sgn(l - rsum) == 0) {
+		u[cnt] = v[cnt] = a.PointOncirle(base);
+		cnt++;
+	} else if (sgn(l - rsum) > 0) {
+		double ang = acos((a.r + b.r) / l);
+		u[cnt] = a.PointOncirle(base + ang);
+		v[cnt] = b.PointOncirle(pi + base + ang);
+		cnt++;
+		u[cnt] = a.PointOncirle(base - ang);
+		v[cnt] = b.PointOncirle(pi + base - ang);
+		cnt++;
+	}
+	return cnt;
+}
+\end{lstlisting}
+
+
+
 \subsection{三角形面积}
 \begin{lstlisting}
 \\ 海伦公式
@@ -7402,6 +9181,420 @@ int main()
 	return 0;
 }
 \end{lstlisting}
+
+
+\section{博弈论}
+\subsection{巴什博奕}
+\textbf{问题描述}\\
+只有一堆$n$个物品，两个人轮流从中取物，规定每次最少取一个，最多取$m$个，最后取光者为胜\\
+\textbf{博弈定理}\\
+若 $n\%(m+1)==0$ 后手必胜，否则先手必胜\\
+\textbf{代码模板}\\
+\begin{lstlisting}
+#include <iostream>
+#include <cstdio>
+using namespace std;
+int t,n,m;
+int main() {
+	scanf("%d", &t);
+	while(t--) {
+		scanf("%d%d", &n, &m);
+		if(n%(m+1)) printf("First Win\n");
+		else printf("Second Win\n");
+	}
+	return 0;
+} 
+\end{lstlisting}
+
+\textbf{例题变式}\\
+\textbf{Public Sale HDU-2149}\\
+\textbf{题意}\\
+一块地在拍卖，刚开始底价为0，两个人轮流开始加价，不过每次加价的幅度要在1～N之间，当价格大于或等于田地的成本价 M 时，主办方就把这块田地卖给这次叫价的人。A每次都先开始叫价，问他第一次要出多少，才能保证一定能买到这块地，如果有多种可能，按小到大顺序输出。\\
+\textbf{思路}\\
+巴什博弈，直接枚举第一次可能取的数字，如果减去这个数字后，剩余的数满足巴什博弈推论，则满足要求\\
+\begin{lstlisting}
+#include <iostream>
+#include <cstdio>
+using namespace std;
+int m,n;
+bool flag = 0;
+int main() {
+	while(scanf("%d%d", &m, &n) != EOF) {
+		if(m <= n) {
+			for(int i = m; i <= n; ++i) {
+				if(i == m) printf("%d", i);
+				else printf(" %d", i);
+			}
+			printf("\n");
+			continue;
+		}
+		if(m%(n+1)) {
+			flag = 0;
+			for(int i = 1; i <= n; ++i) {
+				if((m-i)%(n+1) == 0) {
+					if(flag == 0) printf("%d", i);
+					else printf(" %d", i);
+					flag++;
+				}
+			}
+			printf("\n");
+		} else {
+			printf("none\n");
+		}
+	}
+	return 0;
+}
+\end{lstlisting}
+
+
+\textbf{Buttons POJ-2368}\\
+\textbf{题意}\\
+题意为一堆K粒纽扣，两个玩家轮流从堆中取纽扣，一次可以取1到L个纽扣，取得最后一个纽扣的人是赢家。 让你找到数字最小的数字L(2<L<K)确保第二个人为赢家，如果不存在则输出0\\
+\textbf{思路}\\
+很基础的巴什博弈，输入纽扣数K，要求使后手能赢的最小的L值，其实就是找$K \% (L+1) == 0$ 时 $L$ 的最小值，只需找到$K$的大于$3$的最小因子 $x$ ,那么$L=x-1$\\
+\begin{lstlisting}
+/* 给定k，问取石子的范围L最小是多少，能让第二个人赢 */
+#include <iostream>
+#include <cstdio>
+#include <cmath>
+using namespace std;
+typedef long long ll;
+
+int k;
+
+int main() {
+	scanf("%d", &k);
+	int fac = k;
+	for(int i = 2; i*i <= k; ++i) {
+		if(k%i == 0) {
+			if(i > 2) fac = min(fac, i);
+			if(k/i > 2) fac = min(fac, k/i);
+		}
+	}
+	if(fac > 2) printf("%d\n", fac-1);
+	else printf("0\n");
+	return 0;
+}
+\end{lstlisting}
+
+\subsection{斐波那契博弈}
+\textbf{问题描述}\\
+有一堆个数为n的石子，游戏双方轮流取石子，满足：
+\\
+
+1)先手不能在第一次把所有的石子取完；
+\\
+
+2)之后每次可以取的石子数介于1到对手刚取的石子数的2倍之间（包含1和对手刚取的石子数的2倍）。
+\\
+
+约定取走最后一个石子的人为赢家，求先手必败态。
+\\
+
+\textbf{博弈定理}\\
+
+这个游戏叫做Fibonacci Nim，肯定和Fibonacci数列：f[n]：1,2,3,5,8,13,21,34,55,89,… 有密切的关系。先手胜当且仅当n不是Fibonacci数。换句话说，先手必败态构成Fibonacci数列。\\
+
+\begin{lstlisting}
+#include <iostream>
+#include <cstdio>
+using namespace std;
+const int maxn = 46; // 第45个斐波那契数已经超过1e9 
+int f[maxn];
+int t, n, flag;
+
+void init() {
+	f[1] = f[2] = 1;
+	for(int i = 3; i < maxn; ++i) {
+		f[i] = f[i-1]+f[i-2];
+	}
+}
+int main() {
+	init();
+	scanf("%d", &t);
+	while(t--) {
+		scanf("%d", &n);
+		flag = 1;
+		for(int i = 1; i < maxn; ++i) {
+			if(f[i] == n) {
+				flag = 0;
+				break;
+			}
+		}
+		if(flag) printf("A\n");
+		else printf("B\n");
+	}
+	return 0;
+}
+\end{lstlisting}
+
+\subsection{威佐夫博弈}
+\textbf{问题描述}\\
+有两堆石子，每次每个人可以从任意一堆石子中取任意多的石子或者从两堆石子中取同样多的石子，不能取得人输，分析谁会获得胜利\\
+\textbf{博弈定理}\\
+假设两堆石子为(x,y) ，其中x<y，那么先手必败，当且仅当 $ (y-x) * \frac{1+\sqrt{5}}{2} = x $ ，公式后者的数字实际就是1.618，有些题目要求精度较高，我们可以用下述式子来表示这个值：(1.0+sqrt(5.0))/2.0\\
+\begin{lstlisting}
+while(scanf("%d%d", &a, &b) != EOF) {
+	if(a>b) swap(a,b);
+	int tmpa = int((b-a) * (1.0+sqrt(5.0))/2.0);
+	if(a == tmpa) printf("后手赢\n");
+	else printf("先手赢\n");
+}
+\end{lstlisting}
+
+\textbf{例题变式}\\
+\textbf{取石子游戏 HDU2177}\\
+\textbf{题意}\\
+有两堆石子，数量任意，可以不同。游戏开始由两个人轮流取石子。游戏规定，每次有两种不同的取法，一是可以在任意的一堆中取走任意多的石子；二是可以在两堆中同时取走相同数量的石子。最后把石子全部取完者为胜者。如果轮到你先取，假设双方都采取最好的策略，问最后你是胜者还是败者。如果你胜，你第1次可以怎样取子\\
+\textbf{思路}\\
+威佐夫博弈的变式，除了判断谁赢，还要判断第一步该怎么拿，直接分两种情况枚举，第一个分支，从两堆物品中同时取出相同数量的物品，第二个分支，只从一堆物品中取物品，用map记录已经考虑过的取法\\
+\begin{lstlisting}
+using namespace std;
+typedef long long ll;
+
+int x,y;
+map<int, int> mp;
+
+int main() {
+	while(1) {
+		scanf("%d%d", &x, &y);
+		if(x == 0 && y == 0) break;
+		if(x>y) swap(x,y);
+		double eqa = (1.0+sqrt(5.0))/2.0;
+		int tmpx = int((y-x)*eqa);
+		if(x == tmpx) {
+			printf("0\n");
+		} else {
+			printf("1\n");
+			for(int i = 1; i <= x; ++i) {
+				int n = x-i;
+				int m = y-i;
+				if(n>m) swap(n,m);
+				if(int((m-n)*eqa) == n) {
+					if(mp[n] == 0 && mp[m] == 0) {
+						printf("%d %d\n", n, m);
+						mp[n] = mp[m] = 1;
+					}
+				}
+			}
+			for(int i = 1; i <= y; ++i) {
+				int n = x;
+				int m = y-i;
+				if(n>m) swap(n,m);
+				if(int((m-n)*eqa) == n) {
+					if(mp[n] == 0 && mp[m] == 0) {
+						printf("%d %d\n", n, m);
+						mp[n] = mp[m] = 1;
+					}
+				}
+			}
+			// 只从小堆取也得考虑，情况不会完全重复(不考虑的话可用数据5 7或19 20 去hack, 5 7会输出3 5 3 5 4 7, 19 20会少了12 20) 
+			for(int i = 1; i <= x; ++i) {
+				int n = x-i;
+				int m = y;
+				if(n>m) swap(n,m);
+				if(int((m-n)*eqa) == n) {
+					if(mp[n] == 0 && mp[m] == 0) {
+						printf("%d %d\n", n, m);
+						mp[n] = mp[m] = 1;
+					}
+				}
+			}
+		}
+	}
+	return 0;
+}
+\end{lstlisting}
+
+\textbf{威佐夫游戏 V2 51Nod - 1185} \\
+\textbf{题意}\\
+有2堆石子。A B两个人轮流拿，A先拿。每次可以从一堆中取任意个或从2堆中取相同数量的石子，但不可不取。拿到最后1颗石子的人获胜。假设A B都非常聪明，拿石子的过程中不会出现失误。给出2堆石子的数量，问最后谁能赢得比赛\\
+\textbf{思路}\\
+威佐夫博弈模板，不过要注意这题石子的数据范围是1e18，直接乘 $ \frac{1+\sqrt{5}}{2} $ 的话会有精度问题，所以我们就减少精度问题，就将0.618033988749894848204586834...0.618033988749894848204586834... 拆成整数放进数组里，拆成三部分就行了，然后通过乘法来减少精度的损失\\
+
+\begin{lstlisting}
+/* 大整数乘法还是会出现精度问题，依然要控制精度 */
+#include <iostream>
+#include <cstdio>
+#include <cmath>
+#include <map>
+using namespace std;
+typedef long long ll;
+
+int t;
+ll a,b; 
+// 1.618033988749894848204586834, 我们可以先不计算1, 先算(b-a)*0.6180339...，然后再加上一个(b-a)即可
+ll epa[3] = {618033988,749894848,204586834}; 
+// 把long long数字拆成两个部分再来乘法 
+ll MOD = 1000000000;
+
+int main() {
+	scanf("%d", &t);
+	while(t--) {
+		scanf("%lld%lld", &a, &b);
+		if(a>b) swap(a,b);
+		ll cnt = b-a;
+		ll tmpa = cnt/MOD, tmpb = cnt%MOD; // 把long long数字拆分成两部分 
+		// 模拟一个两位数乘三位数 
+		ll ans = tmpb*epa[2];
+		ans = tmpa*epa[2] + tmpb*epa[1] + ans/MOD;
+		ans = tmpa*epa[1] + tmpb*epa[0] + ans/MOD;
+		ans = tmpa*epa[0] + ans/MOD + cnt;
+		if(ans == a) printf("B\n");
+		else printf("A\n");
+	}
+	return 0;
+}
+\end{lstlisting}
+
+\subsection{对称博弈}
+\textbf{问题描述}\\
+一般对称博弈用于排列成环的情况，比如把一堆硬币排成一圈，然后只能取连续的，问最后谁赢\\
+\textbf{博弈定理}\\
+说是定理其实是个很直观的东西，假设有 $N$ 个硬币，每次可以取 $K$ 个，如果$N < K$ ，则先手必赢，如果 $K=1$ ，则根据 $N$ 的奇偶性判断，否则如果是 $n>k \&\& k!=1$ 的话，无论你第一个人拿什么，怎么拿，后手的人完全可以通过拿走一定数量的硬币把剩下的分成两段相同的连续部分，然后一直模仿第一个人的拿法，这样后手就一定会取得胜利，因为最后一步是后手走的\\
+
+\textbf{Coin Game HDU3951}\\
+\textbf{题意}\\
+两个玩家用一圈n个硬币开始游戏。 他们依次从圈子中拿走硬币，每次他们可以拿1〜K连续硬币。 （想象一下，十个硬币编号从1到10，K等于3，因为1和10是连续的，你可以拿走连续的10,1,2，但是如果2被拿走，你不能拿1，3 ，4，因为1和3不连续） 拿最后一枚硬币的玩家赢得比赛\\
+
+\textbf{思路}\\
+断环然后对称取（与之有个类似的问题就是平面放圆盘，此处就不放例题，大概思路是把第一个放中间，然后其他的对称放）\\
+
+\begin{lstlisting}
+#include <iostream>
+#include <cstdio>
+using namespace std;
+int t, n, k, cas = 0;
+int main() {
+	scanf("%d", &t);
+	while(t--) {
+		scanf("%d%d", &n, &k);
+		if(k == 1) {
+			if(n&1) printf("Case %d: first\n", ++cas);
+			else printf("Case %d: second\n", ++cas);
+		} else if(n <= k) {
+			printf("Case %d: first\n", ++cas);
+		} else { // 断环对称取 
+			printf("Case %d: second\n", ++cas);
+		}
+	}
+	return 0;
+}
+\end{lstlisting}
+
+\subsection{nim博弈}
+\textbf{问题描述}\\
+有任意堆物品，每堆物品的个数是任意的，双方轮流从中取物品，每一次只能从一堆物品中取部分或全部物品，最少取一件，取到最后一件物品的人获胜。\\
+\textbf{博弈定理}\\
+把每堆物品数全部异或起来，如果得到的值为0，那么先手必败，否则先手必胜。\\
+\begin{lstlisting}
+while(cin>>n) {
+	temp=0;
+	for(int i=0;i<n;i++) {
+		cin>>ans;
+		temp^=ans;
+	}
+	if(temp==0)  cout<<"后手必胜"<<endl
+	else cout<<"先手必胜"<<endl;
+}
+\end{lstlisting}
+
+\textbf{例题变式}\\
+\textbf{Being a Good Boy in Spring Festival HDU1850}\\
+\textbf{题意}\\
+桌子上有M堆扑克牌；每堆牌的数量分别为Ni(i=1…M)；两人轮流进行；每走一步可以任意选择一堆并取走其中的任意张牌；桌子上的扑克全部取光，则游戏结束；最后一次取牌的人为胜者。现在我们不想研究到底先手为胜还是为负，我只想问大家：——“先手的人如果想赢，第一步有几种选择呢？\\
+
+\textbf{思路}\\
+这题是nim博弈的一个简单变式，问的是如果先手能赢，则第一步该如何取，假如要从 a1 中取走的 h 个剩 a1‘ 个，使$ a1' \oplus a2 \oplus a3 \oplus ...... = 0$，则有$a1' = a1 \oplus k = a2 \oplus a3 \oplus a4 \oplus a5 \oplus ......$;(因为$a \oplus a = 0; 0 \oplus a =a;$)，因此我们只需要判断 $a1 \oplus k$ 是否比原本的小，即  $ai \oplus k < ai$，如果是，则说明这一堆可以取。\\
+
+\begin{lstlisting}
+#include<iostream>
+#include<cstdio>
+#include<cmath>
+using namespace std;
+int main() {
+	int a[110];
+	int t;
+	while(cin >> t&&t) {
+		int k = 0;
+		for(int i = 0; i < t; i++) {
+			cin >> a[i];
+			k = k^a[i];
+		}
+		int cnt = 0;
+		for(int i = 0; i < t; i++)
+			if((k^a[i]) < a[i])
+				cnt++;
+		cout << cnt << endl;
+	}
+	return 0;
+}
+\end{lstlisting}
+
+\textbf{取m堆石子游戏 HDU2176}\\
+\textbf{题意}\\
+m堆石子,两人轮流取.只能在1堆中取.取完者胜.先取者负输出No.先取者胜输出Yes,然后输出怎样取子.如果从有a个石子的堆中取若干个后剩下b个后会胜就输出a\quad b\\
+\textbf{思路}\\
+nim博弈变式，如果 $(k \oplus a[i]) < a[i]$ ，说明能取，取后的数量是$ k \oplus a[i]$ ，要注意一个坑点，异或计算的优先级比四则运算要低\\
+
+\begin{lstlisting}
+#include <iostream>
+#include <cstdio> 
+using namespace std;
+const int maxn = 2e5+5;
+
+int m, a[maxn];
+
+int main() {
+	while(cin >> m && m) {
+		int k = 0;
+		for(int i = 1; i <= m; ++i) {
+			cin>>a[i];
+			k ^= a[i];
+		}
+		if(k == 0) cout << "NO\n";
+		else {
+			cout << "YES\n";
+			for(int i = 1; i <= m; ++i) {
+				if((a[i]^k) < a[i]) {
+				cout << a[i] << " " << (a[i]^k) << "\n";
+				}
+			}
+		}
+	}
+	return 0;
+}
+\end{lstlisting}
+
+\subsection{SG函数}
+\begin{lstlisting}
+#define MAX 1005 
+/* 计算从1-n范围内的SG值。 
+Array(存储可以走的步数，Array[0]表示可以有多少种走法) 
+Array[]需要从小到大排序 */
+/*HDU1847博弈SG函数 
+1.可选步数为1-m的连续整数，直接取模即可，SG(x) = x % (m+1); 
+2.可选步数为任意步，SG(x) = x; 
+3.可选步数为一系列不连续的数，用GetSG(计算) */ 
+
+int SG[MAX], hash[MAX]; 
+void GetSG(int Array[], int n = MAX-1) { 
+	memset(SG, 0, sizeof(SG)); 
+	for(int i = 0; i <= n; ++i) { 
+		memset(hash, 0, sizeof(hash)); 
+		for(int j = 1; j <= Array[0]; ++j) { 
+			if(i < Array[j]) break; 
+			hash[SG[i - Array[j]]] = 1; 
+		} 
+		for(int j = 0; j <= n; ++j) 
+			if(!hash[j]) { SG[i] = j; break; } 
+	} 
+} 
+\end{lstlisting}
+
+
+
+
 
 
 \section{其它}
@@ -7675,6 +9868,121 @@ String s = cin.nextLine();
 double b = cin.nextDouble();
 \end{lstlisting}
 
+
+\subsection{Python}
+\subsubsection{正常输入输出}
+\begin{lstlisting}
+a = int(input())
+#输入一个int型数
+arr = input("");    
+#输入一个一维数组，每个数之间使空格隔开
+num = [int(n) for n in arr.split()] 
+#将输入每个数以空格键隔开做成数组，忽略前导空格和多个空格
+
+print(num, end='') #end默认是'\n'
+# 正常输出
+\end{lstlisting}
+
+\subsubsection{多组输入直到文件尾结束}
+\begin{lstlisting}
+while True:
+	try:
+		a, b = map(int, raw_input().strip().split())
+		print(a+b)
+	except EOFError:
+		break
+\end{lstlisting}
+
+\subsubsection{知道数据组数}
+\begin{lstlisting}
+tcase = int(raw_input().strip())
+for case in range(tcase):
+	a, b = map(int, raw_input().strip().split())
+	print(a+b)
+\end{lstlisting}
+
+\subsubsection{多组输入}
+\textbf{遇到0 0结束}\\
+\begin{lstlisting}
+while True:
+	a, b = map(int, raw_input().strip().split())
+	if a == 0 and b == 0:
+		break
+	print(a+b)
+\end{lstlisting}
+
+\textbf{输入有多组，并且题目告诉你每组输入遇见什么结束，与第三种不同之处在于，每组输入都有相应的细化}\\
+\begin{lstlisting}
+tcase = int(raw_input().strip())
+for case in range(tcase):
+	a, b = map(int, raw_input().strip().split())
+	if a == 0 and b == 0:
+		break
+	print(a+b)
+\end{lstlisting}
+
+\textbf{这次的输入实现输入一个整数，告诉我们有多少行，在输入每一行。对于每一行的输入，有划分为第一个数和其他的数，第一个数代表那一组数据一共有多少输入}\\
+\begin{lstlisting}
+tcase = int(raw_input().strip())
+for case in range(tcase):
+	data = map(int, raw_input().strip().split())
+	n, array = data[0], data[1:]
+
+	sum = 0
+	for i in range(n):
+		sum += array[i]
+	print(sum)
+\end{lstlisting}
+
+\textbf{有多种输入数据，对于每组输入数据的第一个数代表该组数据接下来要输入数据量}\\
+\begin{lstlisting}
+while True:
+	try:
+		data = map(int, raw_input().strip().split())
+		n, array = data[0], data[1:]
+
+		sum = 0
+		for i in range(n):
+			sum += array[i]
+		print(sum)
+	except EOFError:
+		raise
+\end{lstlisting}
+
+\subsubsection{进制转换}
+\begin{lstlisting}
+def main():
+	code = ['0','1','2','3','4','5','6','7','8','9',
+'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
+'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
+	x,y,z = input().split()
+	x = int(x)
+	y = int(y)
+	# 转为10进制
+	num = 0
+	for ch in z:
+		if ord('0') <= ord(ch) <= ord('9'):  # 0-9
+			num = num * x + ord(ch) - ord('0')
+		elif ord('A') <= ord(ch) <= ord('Z'):  # A-Z
+			num = num * x + ord(ch) - ord('A') + 10
+		else:  # a-z
+			num = num * x + ord(ch) - ord('a') + 36
+
+	if num == 0:
+		print('0')
+		return
+	res = ""
+	while num > 0:
+		tmp = num % y
+		res = res + code[tmp]
+		num = num // y
+	res = res[::-1]
+	print(res)
+
+main()
+\end{lstlisting}
+
+
 \subsection{二分答案}
 \begin{lstlisting}
 #include<bits/stdc++.h>
@@ -7724,6 +10032,56 @@ int main()
 			}
 		}
 		cout<<ans<<endl;
+	}
+	return 0;
+}
+\end{lstlisting}
+
+\subsection{三分}
+$$
+\frac{n * k + m}{1 - ({1-p}^{k})} 
+$$
+\begin{lstlisting}
+#include <bits/stdc++.h>
+using namespace std;
+#define eps 1e-9
+typedef long long ll;
+
+int t;
+double n,m,p;
+
+double qpow(double a, ll k) {
+	double ans = 1;
+	double tmp = a;
+	while(k) {
+		if(k&1) ans *= tmp;
+		tmp *= tmp;
+		k >>= 1;
+	}
+	return ans;
+} 
+
+double f(double n, double m, double p, ll k) {
+	return (n*k+m) / (1.0-qpow(1-p,k)); 
+} 
+
+int main() {
+	scanf("%d", &t);
+	while(t--) {
+		scanf("%lf%lf%lf", &n, &m, &p);
+		p /= 10000.0;
+		ll l = 1, r = 1e9;
+		while(r - l > 2) {
+			ll k1 = l+(r-l)/3;
+			ll k2 = r-(r-l)/3;
+			double v1 = f(n,m,p,k1);
+			double v2 = f(n,m,p,k2);
+			if(v1+eps > v2) l = k1;
+			else r = k2;
+			//	cout << l << " " << r << endl;
+		}
+		double ans = min(f(n,m,p,l-1),min(f(n,m,p,l),min(f(n,m,p,l+1),min(f(n,m,p,r),f(n,m,p,r+1)))));
+		printf("%.10f\n", ans);
 	}
 	return 0;
 }
